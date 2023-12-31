@@ -43,6 +43,11 @@ namespace Cropper
         /// </summary>
         Pen _selectPen = new Pen(Color.Blue, 5) { DashStyle = System.Drawing.Drawing2D.DashStyle.Dash };
 
+        /// <summary>
+        /// Source of the image
+        /// </summary>
+        string _imageSourceFolder;
+
 
         private bool _imageLoaded => pictureBox1.Image != null;
 
@@ -51,9 +56,9 @@ namespace Cropper
         {
             DoubleBuffered = true;
             pictureBox1.SizeMode = PictureBoxSizeMode.AutoSize;
-            pictureBox1.Image = new Bitmap(@"C:\Users\andy\Pictures\Scans\Big Vern\44\Scan_20231230.png");
-            _selectionPanels = new List<SelectionPanel>();
-            pictureBox1.Invalidate();
+            //pictureBox1.Image = new Bitmap(@"C:\Users\andy\Pictures\Scans\Big Vern\44\Scan_20231230.png");
+            //_selectionPanels = new List<SelectionPanel>();
+            //pictureBox1.Invalidate();
         }
 
         #region Picturebox
@@ -85,6 +90,8 @@ namespace Cropper
         /// <param name="e"></param>
         private void Form1_MouseDown(object sender, MouseEventArgs e)
         {
+            if (!_imageLoaded) return;
+
             _IsMouseDown = true;
             _mouseDownLocation = new Point(e.X, e.Y);
 
@@ -120,6 +127,8 @@ namespace Cropper
         /// <param name="e"></param>
         private void Form1_MouseMove(object sender, MouseEventArgs e)
         {
+
+            if (!_imageLoaded) return;
             if (!_IsMouseDown)
             {
 
@@ -188,6 +197,8 @@ namespace Cropper
         /// <param name="e"></param>
         private void Form1_MouseUp(object sender, MouseEventArgs e)
         {
+            if (!_imageLoaded) return;
+
             _IsMouseDown = false;
 
             if (!_SelectionRectangle.IsEmpty)
@@ -211,6 +222,7 @@ namespace Cropper
         /// <param name="e"></param>
         private void Form1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
+            if (!_imageLoaded) return;
             AddPanel(e.X, e.Y, (int)selectionWidth.Value, (int)selectionHeight.Value);
         }
 
@@ -270,6 +282,7 @@ namespace Cropper
 
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
+                    _imageSourceFolder = Path.GetDirectoryName(openFileDialog.FileName);
                     _selectionPanels = new List<SelectionPanel>();
                     pictureBox1.Image = new Bitmap(openFileDialog.FileName);
                     pictureBox1.Invalidate();
@@ -305,7 +318,7 @@ namespace Cropper
             {
                 using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
                 {
-                    folderBrowserDialog.SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+                    folderBrowserDialog.InitialDirectory = _imageSourceFolder;//    Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
                     folderBrowserDialog.Description = "Select a folder";
 
                     if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
@@ -367,8 +380,7 @@ namespace Cropper
             for (int r = 1; r <= rows; r++)                
             {
                 for (int c = 1; c <= cols; c++)
-                {
-                    order++;
+                { 
 
                     int x = (c * padHorizontal) + (panelWidth * (c - 1));
                     int y = (r * padVertical) + (panelHeight * (r - 1));
@@ -380,6 +392,10 @@ namespace Cropper
                             new SelectionPanel(x, y, panelWidth, panelHeight) { Order = order }
 
                         );
+
+                    order++;
+
+                    _selectionPanels.Last().Unselect();
 
                 }
 
