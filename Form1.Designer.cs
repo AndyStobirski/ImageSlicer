@@ -49,13 +49,12 @@
             label3 = new Label();
             numRows = new NumericUpDown();
             numCols = new NumericUpDown();
-            llDeleteSelectedPanel = new LinkLabel();
             groupBox2 = new GroupBox();
-            label7 = new Label();
             panelNumStart = new NumericUpDown();
+            label7 = new Label();
             groupBox3 = new GroupBox();
-            label8 = new Label();
             label9 = new Label();
+            label8 = new Label();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)selectionWidth).BeginInit();
@@ -79,6 +78,7 @@
             pictureBox1.TabIndex = 1;
             pictureBox1.TabStop = false;
             pictureBox1.Paint += Form1_Paint;
+            pictureBox1.MouseClick += pictureBox1_MouseClick;
             pictureBox1.MouseDoubleClick += Form1_MouseDoubleClick;
             pictureBox1.MouseDown += Form1_MouseDown;
             pictureBox1.MouseMove += Form1_MouseMove;
@@ -285,17 +285,6 @@
             numCols.TabIndex = 17;
             numCols.Value = new decimal(new int[] { 5, 0, 0, 0 });
             // 
-            // llDeleteSelectedPanel
-            // 
-            llDeleteSelectedPanel.AutoSize = true;
-            llDeleteSelectedPanel.Location = new Point(454, 9);
-            llDeleteSelectedPanel.Name = "llDeleteSelectedPanel";
-            llDeleteSelectedPanel.Size = new Size(179, 25);
-            llDeleteSelectedPanel.TabIndex = 18;
-            llDeleteSelectedPanel.TabStop = true;
-            llDeleteSelectedPanel.Text = "Delete Selected Panel";
-            llDeleteSelectedPanel.LinkClicked += llDeleteSelectedPanel_LinkClicked;
-            // 
             // groupBox2
             // 
             groupBox2.Controls.Add(panelNumStart);
@@ -309,15 +298,6 @@
             groupBox2.TabStop = false;
             groupBox2.Text = "Panel Export Options";
             // 
-            // label7
-            // 
-            label7.AutoSize = true;
-            label7.Location = new Point(13, 90);
-            label7.Name = "label7";
-            label7.Size = new Size(140, 25);
-            label7.TabIndex = 10;
-            label7.Text = "Starting number";
-            // 
             // panelNumStart
             // 
             panelNumStart.Location = new Point(14, 124);
@@ -326,6 +306,15 @@
             panelNumStart.Size = new Size(217, 31);
             panelNumStart.TabIndex = 11;
             panelNumStart.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            // 
+            // label7
+            // 
+            label7.AutoSize = true;
+            label7.Location = new Point(13, 90);
+            label7.Name = "label7";
+            label7.Size = new Size(140, 25);
+            label7.TabIndex = 10;
+            label7.Text = "Starting number";
             // 
             // groupBox3
             // 
@@ -340,15 +329,6 @@
             groupBox3.TabStop = false;
             groupBox3.Text = "Panel Settings";
             // 
-            // label8
-            // 
-            label8.AutoSize = true;
-            label8.Location = new Point(15, 36);
-            label8.Name = "label8";
-            label8.Size = new Size(141, 25);
-            label8.TabIndex = 6;
-            label8.Text = "Minimum Width";
-            // 
             // label9
             // 
             label9.AutoSize = true;
@@ -358,6 +338,15 @@
             label9.TabIndex = 7;
             label9.Text = "Minimum Height";
             // 
+            // label8
+            // 
+            label8.AutoSize = true;
+            label8.Location = new Point(15, 36);
+            label8.Name = "label8";
+            label8.Size = new Size(141, 25);
+            label8.TabIndex = 6;
+            label8.Text = "Minimum Width";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
@@ -366,7 +355,6 @@
             Controls.Add(groupBox3);
             Controls.Add(propertyGrid1);
             Controls.Add(groupBox2);
-            Controls.Add(llDeleteSelectedPanel);
             Controls.Add(groupBox1);
             Controls.Add(llExportSelected);
             Controls.Add(llClear);
@@ -417,7 +405,6 @@
         private Label label3;
         private NumericUpDown numRows;
         private NumericUpDown numCols;
-        private LinkLabel llDeleteSelectedPanel;
         private GroupBox groupBox2;
         private NumericUpDown panelNumStart;
         private Label label7;

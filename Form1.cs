@@ -34,7 +34,7 @@ namespace Cropper
         /// <summary>
         /// Mouse operations
         /// </summary>
-        bool _IsMouseDown;     
+        bool _IsMouseDown;
         Point _mouseDownLocation;
         Rectangle _SelectionRectangle;
 
@@ -98,7 +98,7 @@ namespace Cropper
             if (_panelOver != null)
             {
                 _selectedPanel = _panelDown = _panelOver;
-                _panelPartDown = _panelPartOver;                
+                _panelPartDown = _panelPartOver;
                 _dragOffset = new Point(e.X - _panelDown.Location.X, e.Y - _panelDown.Location.Y);
 
                 _selectionPanels.Where(s => s != _selectedPanel).ToList().ForEach(s => s.Unselect());
@@ -109,14 +109,14 @@ namespace Cropper
                 _selectedPanel = _panelOver = _panelDown = null;
                 _panelPartDown = _panelPartDown = SelectionPartHit.none;
                 _dragOffset = Point.Empty;
-                
+
                 _selectionPanels.ForEach(s => s.Unselect());
                 pictureBox1.Invalidate();
             }
 
 
-                propertyGrid1.SelectedObject = _selectedPanel;
-                propertyGrid1.Refresh();
+            propertyGrid1.SelectedObject = _selectedPanel;
+            propertyGrid1.Refresh();
 
         }
 
@@ -151,6 +151,10 @@ namespace Cropper
                 else if (_panelPartOver == SelectionPartHit.body)
                 {
                     Cursor = Cursors.SizeAll; // Change cursor when over the Selection rectangle
+                }
+                else if (_panelPartOver == SelectionPartHit.deletebutton)
+                {
+                    Cursor = Cursors.Hand;
                 }
                 else
                 {
@@ -228,7 +232,7 @@ namespace Cropper
 
         #endregion
 
-        public void AddPanel(int x,int y, int w, int h)
+        public void AddPanel(int x, int y, int w, int h)
         {
             var panel = new SelectionPanel(x, y, w, h);
             panel.Order = _selectionPanels.Count + (int)panelNumStart.Value;
@@ -244,6 +248,8 @@ namespace Cropper
         public void ExportImages(string outputDirectory)
         {
             var sourceImage = pictureBox1.Image;
+
+
 
             foreach (SelectionPanel selection in _selectionPanels)
             {
@@ -377,10 +383,10 @@ namespace Cropper
             int panelWidth = (imageWidth - (padHorizontal * (cols + 1))) / rows;
             int panelHeight = (imageHeight - (padHorizontal * (rows + 1))) / cols;
 
-            for (int r = 1; r <= rows; r++)                
+            for (int r = 1; r <= rows; r++)
             {
                 for (int c = 1; c <= cols; c++)
-                { 
+                {
 
                     int x = (c * padHorizontal) + (panelWidth * (c - 1));
                     int y = (r * padVertical) + (panelHeight * (r - 1));
@@ -407,20 +413,6 @@ namespace Cropper
             #endregion
         }
 
-        /// <summary>
-        /// Delete the selected panel
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void llDeleteSelectedPanel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            if (_selectedPanel != null)
-            {
-                _selectionPanels.Remove(_selectedPanel);
-                pictureBox1.Invalidate ();
-            }
-        }
-
         #region Property Grid
 
         private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
@@ -430,5 +422,13 @@ namespace Cropper
 
         #endregion
 
+        private void pictureBox1_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (_selectedPanel != null && _selectedPanel.ItemHit == SelectionPartHit.deletebutton)
+            {
+                _selectionPanels.Remove(_selectedPanel);
+                pictureBox1.Invalidate();
+            }
+        }
     }
 }

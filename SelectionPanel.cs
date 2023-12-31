@@ -11,7 +11,7 @@ using Font = System.Drawing.Font;
 namespace Cropper
 {
 
-    public enum SelectionPartHit { body, dragTL, dragTR, dragBL, dragBR, none };
+    public enum SelectionPartHit { body, dragTL, dragTR, dragBL, dragBR, none, deletebutton };
 
     /// <summary>
     /// Define a portion of the image we want to export
@@ -23,6 +23,8 @@ namespace Cropper
             Dimensions = new Size(w, h);
         }
 
+
+        private Pen _drawPen => new Pen(panelColor, 5) ;
 
         private Color _fillColour =>Color.FromArgb(128, Color.White);
 
@@ -61,6 +63,8 @@ namespace Cropper
         private Rectangle BottomLeftHandle => new Rectangle(Location.X - HandleSize / 2, Location.Y + Dimensions.Height - HandleSize / 2, HandleSize, HandleSize);
         private Rectangle BottomRightHandle => new Rectangle(Location.X + Dimensions.Width - HandleSize / 2, Location.Y + Dimensions.Height - HandleSize / 2, HandleSize, HandleSize);
 
+        private Rectangle DeleteButton => new Rectangle((Location.X + Dimensions.Width - HandleSize / 2) - (1 * HandleSize), (Location.Y - HandleSize / 2) + (1 * HandleSize), HandleSize, HandleSize);
+
         private Font _font = new Font("Arial", 24);
         private SolidBrush _fontBrush => new SolidBrush(panelColor);
 
@@ -95,7 +99,11 @@ namespace Cropper
             {
                 ItemHit = SelectionPartHit.dragBL;
             }
-     
+            else if (DeleteButton.Contains(x, y))
+            {
+                ItemHit = SelectionPartHit.deletebutton;
+            }
+
             else if (Bounds.Contains(x, y))
             {
                 ItemHit = SelectionPartHit.body;
@@ -191,6 +199,12 @@ namespace Cropper
             g.FillRectangle(_handleBrush, TopRightHandle);
             g.FillRectangle(_handleBrush, BottomLeftHandle);
             g.FillRectangle(_handleBrush, BottomRightHandle);
+
+            //delete button
+           // g.FillRectangle(_handleBrush, DeleteButton);
+
+            g.DrawLine(_drawPen, new Point(DeleteButton.Left, DeleteButton.Top), new Point(DeleteButton.Right, DeleteButton.Bottom));
+            g.DrawLine(_drawPen, new Point(DeleteButton.Left, DeleteButton.Bottom), new Point(DeleteButton.Right, DeleteButton.Top));
 
             //draw its order number
             SizeF textSize = g.MeasureString(Order.ToString(), _font);
