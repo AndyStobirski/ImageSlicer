@@ -13,35 +13,37 @@ namespace Cropper
 
     public enum SelectionPartHit { body, dragTL, dragTR, dragBL, dragBR, none };
 
-    public enum SelectedActivty { move, resize, none};
-
     /// <summary>
     /// Define a portion of the image we want to export
     /// </summary>
-    public class Selection
+    public class SelectionPanel
     {
-        public Selection(int x, int y, int w, int h) { 
+        public SelectionPanel(int x, int y, int w, int h) { 
             Location = new Point(x, y);
             Dimensions = new Size(w, h);
         }
 
+
+        private Color _fillColour =>Color.FromArgb(128, Color.White);
+
+        SolidBrush _fillBrush => new SolidBrush(_fillColour);
+
+
         private Pen _outlinePen =>  new(panelColor, 5);
 
-        [Browsable(false)]
+      
         private SolidBrush _handleBrush => new(panelColor);
 
-        [Browsable(false)]
+   
         private Color panelColor => ItemHit == SelectionPartHit.none ? Color.Blue : Color.Red;
-
-        public Color Colour = Color.Red;
 
         [Browsable(false)]
         public String Name => $"Selection {Order}";
 
-        [Browsable(false)]
+
         public Point Location { get; set; }
 
-        [Browsable(false)]
+
         public Size Dimensions { get; set; }
 
         [Browsable(false)]
@@ -50,7 +52,6 @@ namespace Cropper
         [Browsable(false)]
         public SelectionPartHit ItemHit { get; private set; }
 
-        [Browsable(false)]
         public int Order { get; set; }  
         
 
@@ -60,8 +61,8 @@ namespace Cropper
         private Rectangle BottomLeftHandle => new Rectangle(Location.X - HandleSize / 2, Location.Y + Dimensions.Height - HandleSize / 2, HandleSize, HandleSize);
         private Rectangle BottomRightHandle => new Rectangle(Location.X + Dimensions.Width - HandleSize / 2, Location.Y + Dimensions.Height - HandleSize / 2, HandleSize, HandleSize);
 
-        private Font _font = new Font("Arial", 12);
-        private Brush _fontBrush = Brushes.Black;
+        private Font _font = new Font("Arial", 24);
+        private SolidBrush _fontBrush => new SolidBrush(panelColor);
 
         public void Unselect()
         {
@@ -179,7 +180,10 @@ namespace Cropper
         /// <param name="g"></param>
         public void Draw(Graphics g)
         {
-            // Draw rectangle
+            // Draw rectangle fill;
+            g.FillRectangle(_fillBrush, Bounds);
+
+            // Draw rectangle outline
             g.DrawRectangle(_outlinePen, Bounds);
 
             // Draw handles

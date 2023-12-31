@@ -28,18 +28,15 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
             pictureBox1 = new PictureBox();
             propertyGrid1 = new PropertyGrid();
             panel1 = new Panel();
-            label1 = new Label();
             selectionWidth = new NumericUpDown();
             selectionHeight = new NumericUpDown();
             label2 = new Label();
             txtOutputName = new TextBox();
             llClearSelection = new LinkLabel();
             llLoadImage = new LinkLabel();
-            imageList1 = new ImageList(components);
             llClear = new LinkLabel();
             llExportSelected = new LinkLabel();
             llGenerate = new LinkLabel();
@@ -53,6 +50,12 @@
             numRows = new NumericUpDown();
             numCols = new NumericUpDown();
             llDeleteSelectedPanel = new LinkLabel();
+            groupBox2 = new GroupBox();
+            label7 = new Label();
+            panelNumStart = new NumericUpDown();
+            groupBox3 = new GroupBox();
+            label8 = new Label();
+            label9 = new Label();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)selectionWidth).BeginInit();
@@ -62,6 +65,9 @@
             ((System.ComponentModel.ISupportInitialize)padV).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numRows).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numCols).BeginInit();
+            groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)panelNumStart).BeginInit();
+            groupBox3.SuspendLayout();
             SuspendLayout();
             // 
             // pictureBox1
@@ -80,9 +86,9 @@
             // 
             // propertyGrid1
             // 
-            propertyGrid1.Location = new Point(14, 287);
+            propertyGrid1.Location = new Point(23, 675);
             propertyGrid1.Name = "propertyGrid1";
-            propertyGrid1.Size = new Size(341, 406);
+            propertyGrid1.Size = new Size(341, 346);
             propertyGrid1.TabIndex = 2;
             propertyGrid1.PropertyValueChanged += propertyGrid1_PropertyValueChanged;
             // 
@@ -97,20 +103,11 @@
             panel1.Size = new Size(1292, 1026);
             panel1.TabIndex = 3;
             // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Location = new Point(14, 75);
-            label1.Name = "label1";
-            label1.Size = new Size(119, 25);
-            label1.TabIndex = 5;
-            label1.Text = "Selection Size";
-            // 
             // selectionWidth
             // 
-            selectionWidth.Location = new Point(139, 75);
+            selectionWidth.Location = new Point(15, 64);
             selectionWidth.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
-            selectionWidth.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            selectionWidth.Minimum = new decimal(new int[] { 32, 0, 0, 0 });
             selectionWidth.Name = "selectionWidth";
             selectionWidth.Size = new Size(103, 31);
             selectionWidth.TabIndex = 7;
@@ -118,9 +115,9 @@
             // 
             // selectionHeight
             // 
-            selectionHeight.Location = new Point(248, 75);
+            selectionHeight.Location = new Point(15, 144);
             selectionHeight.Maximum = new decimal(new int[] { 100000, 0, 0, 0 });
-            selectionHeight.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            selectionHeight.Minimum = new decimal(new int[] { 32, 0, 0, 0 });
             selectionHeight.Name = "selectionHeight";
             selectionHeight.Size = new Size(107, 31);
             selectionHeight.TabIndex = 7;
@@ -129,15 +126,15 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(15, 135);
+            label2.Location = new Point(13, 28);
             label2.Name = "label2";
-            label2.Size = new Size(116, 25);
+            label2.Size = new Size(121, 25);
             label2.TabIndex = 8;
-            label2.Text = "OutputName";
+            label2.Text = "Output Name";
             // 
             // txtOutputName
             // 
-            txtOutputName.Location = new Point(137, 132);
+            txtOutputName.Location = new Point(13, 56);
             txtOutputName.Name = "txtOutputName";
             txtOutputName.Size = new Size(218, 31);
             txtOutputName.TabIndex = 9;
@@ -164,12 +161,6 @@
             llLoadImage.TabStop = true;
             llLoadImage.Text = "Load Image";
             llLoadImage.LinkClicked += llLoadImage_LinkClicked;
-            // 
-            // imageList1
-            // 
-            imageList1.ColorDepth = ColorDepth.Depth32Bit;
-            imageList1.ImageSize = new Size(16, 16);
-            imageList1.TransparentColor = Color.Transparent;
             // 
             // llClear
             // 
@@ -215,9 +206,9 @@
             groupBox1.Controls.Add(numRows);
             groupBox1.Controls.Add(numCols);
             groupBox1.Controls.Add(llGenerate);
-            groupBox1.Location = new Point(24, 774);
+            groupBox1.Location = new Point(24, 250);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(331, 215);
+            groupBox1.Size = new Size(340, 215);
             groupBox1.TabIndex = 17;
             groupBox1.TabStop = false;
             groupBox1.Text = "Generate Panels";
@@ -225,18 +216,20 @@
             // padH
             // 
             padH.Location = new Point(171, 136);
+            padH.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             padH.Name = "padH";
             padH.Size = new Size(87, 31);
             padH.TabIndex = 24;
-            padH.Value = new decimal(new int[] { 5, 0, 0, 0 });
+            padH.Value = new decimal(new int[] { 10, 0, 0, 0 });
             // 
             // padV
             // 
             padV.Location = new Point(6, 136);
+            padV.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             padV.Name = "padV";
             padV.Size = new Size(87, 31);
             padV.TabIndex = 23;
-            padV.Value = new decimal(new int[] { 5, 0, 0, 0 });
+            padV.Value = new decimal(new int[] { 10, 0, 0, 0 });
             // 
             // label6
             // 
@@ -277,6 +270,7 @@
             // numRows
             // 
             numRows.Location = new Point(171, 62);
+            numRows.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numRows.Name = "numRows";
             numRows.Size = new Size(87, 31);
             numRows.TabIndex = 18;
@@ -285,6 +279,7 @@
             // numCols
             // 
             numCols.Location = new Point(6, 61);
+            numCols.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numCols.Name = "numCols";
             numCols.Size = new Size(87, 31);
             numCols.TabIndex = 17;
@@ -301,24 +296,83 @@
             llDeleteSelectedPanel.Text = "Delete Selected Panel";
             llDeleteSelectedPanel.LinkClicked += llDeleteSelectedPanel_LinkClicked;
             // 
+            // groupBox2
+            // 
+            groupBox2.Controls.Add(panelNumStart);
+            groupBox2.Controls.Add(label7);
+            groupBox2.Controls.Add(txtOutputName);
+            groupBox2.Controls.Add(label2);
+            groupBox2.Location = new Point(23, 72);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Size = new Size(341, 172);
+            groupBox2.TabIndex = 19;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "Panel Export Options";
+            // 
+            // label7
+            // 
+            label7.AutoSize = true;
+            label7.Location = new Point(13, 90);
+            label7.Name = "label7";
+            label7.Size = new Size(140, 25);
+            label7.TabIndex = 10;
+            label7.Text = "Starting number";
+            // 
+            // panelNumStart
+            // 
+            panelNumStart.Location = new Point(14, 124);
+            panelNumStart.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            panelNumStart.Name = "panelNumStart";
+            panelNumStart.Size = new Size(217, 31);
+            panelNumStart.TabIndex = 11;
+            panelNumStart.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            // 
+            // groupBox3
+            // 
+            groupBox3.Controls.Add(label9);
+            groupBox3.Controls.Add(label8);
+            groupBox3.Controls.Add(selectionWidth);
+            groupBox3.Controls.Add(selectionHeight);
+            groupBox3.Location = new Point(23, 471);
+            groupBox3.Name = "groupBox3";
+            groupBox3.Size = new Size(341, 198);
+            groupBox3.TabIndex = 20;
+            groupBox3.TabStop = false;
+            groupBox3.Text = "Panel Settings";
+            // 
+            // label8
+            // 
+            label8.AutoSize = true;
+            label8.Location = new Point(15, 36);
+            label8.Name = "label8";
+            label8.Size = new Size(141, 25);
+            label8.TabIndex = 6;
+            label8.Text = "Minimum Width";
+            // 
+            // label9
+            // 
+            label9.AutoSize = true;
+            label9.Location = new Point(13, 116);
+            label9.Name = "label9";
+            label9.Size = new Size(146, 25);
+            label9.TabIndex = 7;
+            label9.Text = "Minimum Height";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1681, 1108);
+            Controls.Add(groupBox3);
+            Controls.Add(propertyGrid1);
+            Controls.Add(groupBox2);
             Controls.Add(llDeleteSelectedPanel);
             Controls.Add(groupBox1);
             Controls.Add(llExportSelected);
             Controls.Add(llClear);
             Controls.Add(llLoadImage);
             Controls.Add(llClearSelection);
-            Controls.Add(txtOutputName);
-            Controls.Add(label2);
-            Controls.Add(selectionHeight);
-            Controls.Add(selectionWidth);
-            Controls.Add(label1);
             Controls.Add(panel1);
-            Controls.Add(propertyGrid1);
             Name = "Form1";
             Text = "Form1";
             Load += Form1_Load;
@@ -332,6 +386,11 @@
             ((System.ComponentModel.ISupportInitialize)padV).EndInit();
             ((System.ComponentModel.ISupportInitialize)numRows).EndInit();
             ((System.ComponentModel.ISupportInitialize)numCols).EndInit();
+            groupBox2.ResumeLayout(false);
+            groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)panelNumStart).EndInit();
+            groupBox3.ResumeLayout(false);
+            groupBox3.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -340,14 +399,12 @@
         private PictureBox pictureBox1;
         private PropertyGrid propertyGrid1;
         private Panel panel1;
-        private Label label1;
         private NumericUpDown selectionWidth;
         private NumericUpDown selectionHeight;
         private Label label2;
         private TextBox txtOutputName;
         private LinkLabel llClearSelection;
         private LinkLabel llLoadImage;
-        private ImageList imageList1;
         private LinkLabel llClear;
         private LinkLabel llExportSelected;
         private LinkLabel llGenerate;
@@ -361,5 +418,11 @@
         private NumericUpDown numRows;
         private NumericUpDown numCols;
         private LinkLabel llDeleteSelectedPanel;
+        private GroupBox groupBox2;
+        private NumericUpDown panelNumStart;
+        private Label label7;
+        private GroupBox groupBox3;
+        private Label label9;
+        private Label label8;
     }
 }
