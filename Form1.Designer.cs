@@ -119,9 +119,9 @@
             panel1.AutoScroll = true;
             panel1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             panel1.Controls.Add(pictureBox1);
-            panel1.Location = new Point(377, 69);
+            panel1.Location = new Point(376, 37);
             panel1.Name = "panel1";
-            panel1.Size = new Size(1292, 1026);
+            panel1.Size = new Size(1292, 1054);
             panel1.TabIndex = 3;
             // 
             // selectionWidth
@@ -328,10 +328,10 @@
             // 
             tabControl1.Controls.Add(tabPage1);
             tabControl1.Controls.Add(tabPage2);
-            tabControl1.Location = new Point(12, 69);
+            tabControl1.Location = new Point(12, 36);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(362, 1027);
+            tabControl1.Size = new Size(362, 1055);
             tabControl1.TabIndex = 2;
             // 
             // tabPage1
@@ -341,7 +341,7 @@
             tabPage1.Location = new Point(4, 34);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(354, 989);
+            tabPage1.Size = new Size(354, 1017);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Panels";
             tabPage1.UseVisualStyleBackColor = true;
@@ -362,7 +362,7 @@
             tabPage2.Location = new Point(4, 34);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(354, 989);
+            tabPage2.Size = new Size(354, 1017);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Settings";
             tabPage2.UseVisualStyleBackColor = true;
@@ -474,7 +474,7 @@
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1681, 1108);
+            ClientSize = new Size(1681, 1103);
             Controls.Add(tabControl1);
             Controls.Add(panel1);
             Controls.Add(menuStrip1);

@@ -322,7 +322,7 @@ namespace Cropper
                     }
 
                     // Save the cropped image to a file
-                    string outputFilePath = Path.Combine(outputDirectory, $"{pImageName}_{selection.Order + pStartNumber}.png");
+                    string outputFilePath = Path.Combine(outputDirectory, $"{pImageName}_{selection.Order - 1 + pStartNumber}.png");
                     croppedImage.Save(outputFilePath, ImageFormat.Png);
                 }
             }
