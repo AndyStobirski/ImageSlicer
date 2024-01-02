@@ -20,9 +20,13 @@ namespace Cropper
     {
         public SelectionPanel(int x, int y, int w, int h) { 
             Location = new Point(x, y);
-            Dimensions = new Size(w, h);
+            PanelSize = new Size(w, h);
         }
 
+        [Browsable(false)]
+        public Guid ID { get; private set; } = Guid.NewGuid();
+
+        #region Panel Drawing Properties
 
         private Pen _drawPen => new Pen(panelColor, 5) ;
 
@@ -30,44 +34,64 @@ namespace Cropper
 
         SolidBrush _fillBrush => new SolidBrush(_fillColour);
 
-
         private Pen _outlinePen =>  new(panelColor, 5);
-
-      
+        
         private SolidBrush _handleBrush => new(panelColor);
 
-   
         private Color panelColor => ItemHit == SelectionPartHit.none ? Color.Blue : Color.Red;
+
+        #endregion
 
         [Browsable(false)]
         public String Name => $"Selection {Order}";
 
-
+        /// <summary>
+        /// Panel top left
+        /// </summary>
         public Point Location { get; set; }
 
+        /// <summary>
+        /// Size of shape
+        /// </summary>
+        public Size PanelSize { get; set; }
+        public int Order { get; set; }
 
-        public Size Dimensions { get; set; }
-
+        /// <summary>
+        /// Rectangle which defines the panel
+        /// </summary>
         [Browsable(false)]
-        public Rectangle Bounds => new(Location, Dimensions);
+        public Rectangle Bounds => new(Location, PanelSize);
 
+        /// <summary>
+        /// Location the panel is hit by the mouse
+        /// </summary>
         [Browsable(false)]
-        public SelectionPartHit ItemHit { get; private set; }
+        public SelectionPartHit ItemHit { get;  set; }
 
-        public int Order { get; set; }  
-        
+
+
+        #region drag handles definitions
 
         private const int HandleSize = 16;
         private Rectangle TopLeftHandle => new Rectangle(Location.X - HandleSize / 2, Location.Y - HandleSize / 2, HandleSize, HandleSize);
-        private Rectangle TopRightHandle => new Rectangle(Location.X + Dimensions.Width - HandleSize / 2, Location.Y - HandleSize / 2, HandleSize, HandleSize);
-        private Rectangle BottomLeftHandle => new Rectangle(Location.X - HandleSize / 2, Location.Y + Dimensions.Height - HandleSize / 2, HandleSize, HandleSize);
-        private Rectangle BottomRightHandle => new Rectangle(Location.X + Dimensions.Width - HandleSize / 2, Location.Y + Dimensions.Height - HandleSize / 2, HandleSize, HandleSize);
+        private Rectangle TopRightHandle => new Rectangle(Location.X + PanelSize.Width - HandleSize / 2, Location.Y - HandleSize / 2, HandleSize, HandleSize);
+        private Rectangle BottomLeftHandle => new Rectangle(Location.X - HandleSize / 2, Location.Y + PanelSize.Height - HandleSize / 2, HandleSize, HandleSize);
+        private Rectangle BottomRightHandle => new Rectangle(Location.X + PanelSize.Width - HandleSize / 2, Location.Y + PanelSize.Height - HandleSize / 2, HandleSize, HandleSize);
 
-        private Rectangle DeleteButton => new Rectangle((Location.X + Dimensions.Width - HandleSize / 2) - (1 * HandleSize), (Location.Y - HandleSize / 2) + (1 * HandleSize), HandleSize, HandleSize);
+        private Rectangle DeleteButton => new Rectangle((Location.X + PanelSize.Width - HandleSize / 2) - (1 * HandleSize), (Location.Y - HandleSize / 2) + (1 * HandleSize), HandleSize, HandleSize);
+
+        #endregion
+
+        #region font defintions
 
         private Font _font = new Font("Arial", 24);
         private SolidBrush _fontBrush => new SolidBrush(panelColor);
 
+        #endregion
+
+        /// <summary>
+        /// Unselect the shape
+        /// </summary>
         public void Unselect()
         {
             ItemHit = SelectionPartHit.none;
@@ -103,7 +127,6 @@ namespace Cropper
             {
                 ItemHit = SelectionPartHit.deletebutton;
             }
-
             else if (Bounds.Contains(x, y))
             {
                 ItemHit = SelectionPartHit.body;
@@ -114,15 +137,6 @@ namespace Cropper
                 hit = false;
             }
             return hit;
-        }
-
-
-
-        // Detects if the mouse is over any handle
-        public bool IsOverHandle(int x, int y)
-        {
-            return TopLeftHandle.Contains(x, y) || TopRightHandle.Contains(x, y)
-                || BottomLeftHandle.Contains(x, y) || BottomRightHandle.Contains(x, y);
         }
 
         /// <summary>
@@ -136,37 +150,42 @@ namespace Cropper
         }
 
 
-        // Determines which handle is being dragged and updates the rectangle's dimensions
+        /// <summary>
+        /// Determines which handle is being dragged and updates the rectangle's dimensions
+        /// </summary>
+        /// <param name="x">New x location</param>
+        /// <param name="y">New y location</param>
+        /// <param name="mouseDownLocation">Part of the panel the mouse is hitting</param>
         public void DragHandle(int x, int y, SelectionPartHit mouseDownLocation)
         {
 
                 if (mouseDownLocation == SelectionPartHit.dragTL )
                 {
-                    int newWidth = Dimensions.Width - (x - Location.X);
-                    int newHeight = Dimensions.Height - (y - Location.Y);
+                    int newWidth = PanelSize.Width - (x - Location.X);
+                    int newHeight = PanelSize.Height - (y - Location.Y);
                     if (newWidth > 0 && newHeight > 0)
                     {
                         Location = new Point(x, y);
-                        Dimensions = new Size(newWidth, newHeight);
+                        PanelSize = new Size(newWidth, newHeight);
                     }
                 }
                 else if (mouseDownLocation == SelectionPartHit.dragTR)
                 {
                     int newWidth = x - Location.X;
-                    int newHeight = Dimensions.Height - (y - Location.Y);
+                    int newHeight = PanelSize.Height - (y - Location.Y);
                     if (newWidth > 0 && newHeight > 0)
                     {
-                        Dimensions = new Size(newWidth, newHeight);
+                        PanelSize = new Size(newWidth, newHeight);
                         Location = new Point(Location.X, y);
                     }
                 }
             else if (mouseDownLocation == SelectionPartHit.dragBL)
             {
-                    int newWidth = Dimensions.Width - (x - Location.X);
+                    int newWidth = PanelSize.Width - (x - Location.X);
                     int newHeight = y - Location.Y;
                     if (newWidth > 0 && newHeight > 0)
                     {
-                        Dimensions = new Size(newWidth, newHeight);
+                        PanelSize = new Size(newWidth, newHeight);
                         Location = new Point(x, Location.Y);
                     }
                 }
@@ -176,7 +195,7 @@ namespace Cropper
                     int newHeight = y - Location.Y;
                     if (newWidth > 0 && newHeight > 0)
                     {
-                        Dimensions = new Size(newWidth, newHeight);
+                        PanelSize = new Size(newWidth, newHeight);
                     }
                 }
 

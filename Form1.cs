@@ -5,6 +5,8 @@ using System.Windows.Forms;
 using System.Drawing.Imaging;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ProgressBar;
 using System.Diagnostics;
+using System.Runtime.Serialization;
+using ImageSlicer;
 
 namespace Cropper
 {
@@ -56,12 +58,12 @@ namespace Cropper
         {
             DoubleBuffered = true;
             pictureBox1.SizeMode = PictureBoxSizeMode.AutoSize;
-            //pictureBox1.Image = new Bitmap(@"C:\Users\andy\Pictures\Scans\Big Vern\44\Scan_20231230.png");
+            //pictureBox1.Image = new Bitmap(@"C:\Users\andy\Pictures\Scans\Viz59\ColditsKids\Colditz Kids.png");
             //_selectionPanels = new List<SelectionPanel>();
-            //pictureBox1.Invalidate();
+            pictureBox1.Invalidate();
         }
 
-        #region Picturebox
+        #region Picturebox Events
 
         /// <summary>
         /// Draw the picture box contents
@@ -100,9 +102,7 @@ namespace Cropper
                 _selectedPanel = _panelDown = _panelOver;
                 _panelPartDown = _panelPartOver;
                 _dragOffset = new Point(e.X - _panelDown.Location.X, e.Y - _panelDown.Location.Y);
-
                 _selectionPanels.Where(s => s != _selectedPanel).ToList().ForEach(s => s.Unselect());
-
             }
             else
             {
@@ -232,20 +232,79 @@ namespace Cropper
 
         #endregion
 
+        #region treeview code
+
+        /// <summary>
+        /// Add a panel into the treeview
+        /// </summary>
+        /// <param name="pNewPanel"></param>
+        public void AddPanelToTree(SelectionPanel pNewPanel)
+        {
+            treeView1.Nodes.Add(pNewPanel.ID.ToString(), pNewPanel.Name);
+        }
+
+        /// <summary>
+        /// Remove the specified panel from the treeview
+        /// </summary>
+        /// <param name="pPanel"></param>
+        public void RemovePanel(SelectionPanel pPanel)
+        {
+            treeView1.Nodes.Remove
+                (
+                    treeView1.Nodes.Find(pPanel.ID.ToString(), false).First()
+                );
+
+            propertyGrid1.SelectedObject = null;
+        }
+
+        /// <summary>
+        /// A node has been clocked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void treeView1_MouseDown(object sender, MouseEventArgs e)
+        {
+            TreeNode n = treeView1.GetNodeAt(e.X, e.Y);
+
+            if (n != null)
+            {
+                _selectedPanel = _panelDown = _panelOver = _selectionPanels.First(p => p.ID.ToString() == n.Name);
+                _selectedPanel.ItemHit = SelectionPartHit.body;
+                _panelPartDown = _panelPartOver = SelectionPartHit.body;
+                propertyGrid1.SelectedObject = _selectedPanel;
+                _selectionPanels.Where(s => s != _selectedPanel).ToList().ForEach(s => s.Unselect());
+                pictureBox1.Invalidate();
+            }
+        }
+
+        #endregion
+
+
+
+        /// <summary>
+        /// Add a panel onto the form
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="w"></param>
+        /// <param name="h"></param>
         public void AddPanel(int x, int y, int w, int h)
         {
-            var panel = new SelectionPanel(x, y, w, h);
-            panel.Order = _selectionPanels.Count + (int)panelNumStart.Value;
+            var panel = new SelectionPanel(x, y, w, h);            
+            panel.Order = _selectionPanels.Count;
+
             _selectionPanels.Add(panel);
+            AddPanelToTree(panel);
             propertyGrid1.SelectedObject = _selectionPanels.Last();
             pictureBox1.Invalidate();
+
         }
 
         /// <summary>
         /// Export the images based on the selectionPanels
         /// </summary>
         /// <param name="outputDirectory"></param>
-        public void ExportImages(string outputDirectory)
+        public void ExportImages(string outputDirectory, int pStartNumber, string pImageName)
         {
             var sourceImage = pictureBox1.Image;
 
@@ -253,7 +312,7 @@ namespace Cropper
 
             foreach (SelectionPanel selection in _selectionPanels)
             {
-                using (Bitmap croppedImage = new Bitmap(selection.Dimensions.Width, selection.Dimensions.Height))
+                using (Bitmap croppedImage = new Bitmap(selection.PanelSize.Width, selection.PanelSize.Height))
                 {
                     using (Graphics g = Graphics.FromImage(croppedImage))
                     {
@@ -263,7 +322,7 @@ namespace Cropper
                     }
 
                     // Save the cropped image to a file
-                    string outputFilePath = Path.Combine(outputDirectory, $"{txtOutputName.Text}_{selection.Order}.png");
+                    string outputFilePath = Path.Combine(outputDirectory, $"{pImageName}_{selection.Order + pStartNumber}.png");
                     croppedImage.Save(outputFilePath, ImageFormat.Png);
                 }
             }
@@ -273,97 +332,6 @@ namespace Cropper
 
         #region Linkbutton
 
-        /// <summary>
-        /// Load an image
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void llLoadImage_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            using (OpenFileDialog openFileDialog = new OpenFileDialog())
-            {
-                openFileDialog.Title = "Select an Image File";
-                openFileDialog.Filter = "Image Files|*.bmp;*.jpg;*.jpeg;*.gif;*.png;*.tif;*.tiff|All Files|*.*";
-                openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
-
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    _imageSourceFolder = Path.GetDirectoryName(openFileDialog.FileName);
-                    _selectionPanels = new List<SelectionPanel>();
-                    pictureBox1.Image = new Bitmap(openFileDialog.FileName);
-                    pictureBox1.Invalidate();
-                }
-                else
-                {
-                    pictureBox1.Image = null;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Export the image panels
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void llExportSelected_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            if (!_imageLoaded)
-            {
-                MessageBox.Show("Must select an image first");
-            }
-            else if (_selectionPanels.Count == 0)
-            {
-                MessageBox.Show("Must select image portions");
-            }
-            else if (txtOutputName.Text.Trim() == "")
-            {
-                MessageBox.Show("Must select an output name");
-                txtOutputName.Focus();
-            }
-            else
-            {
-                using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
-                {
-                    folderBrowserDialog.InitialDirectory = _imageSourceFolder;//    Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
-                    folderBrowserDialog.Description = "Select a folder";
-
-                    if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
-                    {
-                        ExportImages(folderBrowserDialog.SelectedPath);
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Remove all panels
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void llClearSelection_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            _selectionPanels.Clear();
-            pictureBox1.Invalidate();
-            propertyGrid1.SelectedObject = null;
-        }
-
-        /// <summary>
-        /// Clear the project
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void llClear_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            if (MessageBox.Show("Clear project?", "Clear Project", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
-            {
-                return;
-            }
-
-            pictureBox1.Image = null;
-            _selectionPanels.Clear();
-            propertyGrid1.SelectedObject = null;
-            pictureBox1.Invalidate();
-        }
 
         /// <summary>
         /// Autogenerate panels
@@ -408,10 +376,24 @@ namespace Cropper
                 pictureBox1.Invalidate();
 
             }
-
-
-            #endregion
         }
+
+        /// <summary>
+        /// Check for clicks on the delete button on the panel
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void pictureBox1_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (_selectedPanel != null && _selectedPanel.ItemHit == SelectionPartHit.deletebutton)
+            {
+                RemovePanel(_selectedPanel);
+                _selectionPanels.Remove(_selectedPanel);
+                pictureBox1.Invalidate();
+            }
+        }
+
+        #endregion
 
         #region Property Grid
 
@@ -422,13 +404,87 @@ namespace Cropper
 
         #endregion
 
-        private void pictureBox1_MouseClick(object sender, MouseEventArgs e)
+
+
+        #region tool strip items
+
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (_selectedPanel != null && _selectedPanel.ItemHit == SelectionPartHit.deletebutton)
+            if (MessageBox.Show("Clear project?", "Clear Project", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
             {
-                _selectionPanels.Remove(_selectedPanel);
-                pictureBox1.Invalidate();
+                return;
+            }
+
+            pictureBox1.Image = null;
+            _selectionPanels.Clear();
+            propertyGrid1.SelectedObject = null;
+            pictureBox1.Invalidate();
+        }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Title = "Select an Image File";
+                openFileDialog.Filter = "Image Files|*.bmp;*.jpg;*.jpeg;*.gif;*.png;*.tif;*.tiff|All Files|*.*";
+                openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    _imageSourceFolder = Path.GetDirectoryName(openFileDialog.FileName);
+                    _selectionPanels = new List<SelectionPanel>();
+                    pictureBox1.Image = new Bitmap(openFileDialog.FileName);
+                    pictureBox1.Invalidate();
+                }
+                else
+                {
+                    pictureBox1.Image = null;
+                }
             }
         }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void removeAllPanelsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            treeView1.Nodes.Clear();
+            _selectionPanels.Clear();
+            pictureBox1.Invalidate();
+            propertyGrid1.SelectedObject = null;
+        }
+
+        private void exportImagesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!_imageLoaded)
+            {
+                MessageBox.Show("Must select an image first");
+            }
+            else if (_selectionPanels.Count == 0)
+            {
+                MessageBox.Show("Must select image portions");
+            }
+            else
+            {                
+                frmExportOptions popupForm = new frmExportOptions();
+                popupForm.ImageSourceFolder = _imageSourceFolder;
+                if (popupForm.ShowDialog() == DialogResult.OK)
+                {
+                    ExportImages(popupForm.ImageSourceFolder, popupForm.PanelStartNumber, popupForm.ImageName);
+                }
+            }
+            }
+        }
+
+        #endregion
+
+
+
     }
-}

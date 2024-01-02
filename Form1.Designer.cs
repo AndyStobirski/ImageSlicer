@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             pictureBox1 = new PictureBox();
             propertyGrid1 = new PropertyGrid();
             panel1 = new Panel();
@@ -35,10 +36,6 @@
             selectionHeight = new NumericUpDown();
             label2 = new Label();
             txtOutputName = new TextBox();
-            llClearSelection = new LinkLabel();
-            llLoadImage = new LinkLabel();
-            llClear = new LinkLabel();
-            llExportSelected = new LinkLabel();
             llGenerate = new LinkLabel();
             groupBox1 = new GroupBox();
             padH = new NumericUpDown();
@@ -55,6 +52,24 @@
             groupBox3 = new GroupBox();
             label9 = new Label();
             label8 = new Label();
+            tabControl1 = new TabControl();
+            tabPage1 = new TabPage();
+            treeView1 = new TreeView();
+            tabPage2 = new TabPage();
+            menuStrip1 = new MenuStrip();
+            fileToolStripMenuItem = new ToolStripMenuItem();
+            newToolStripMenuItem = new ToolStripMenuItem();
+            openToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator = new ToolStripSeparator();
+            saveToolStripMenuItem = new ToolStripMenuItem();
+            saveAsToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator2 = new ToolStripSeparator();
+            exitToolStripMenuItem = new ToolStripMenuItem();
+            editToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator3 = new ToolStripSeparator();
+            removeAllPanelsToolStripMenuItem = new ToolStripMenuItem();
+            toolsToolStripMenuItem = new ToolStripMenuItem();
+            exportImagesToolStripMenuItem = new ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)selectionWidth).BeginInit();
@@ -67,6 +82,10 @@
             groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)panelNumStart).BeginInit();
             groupBox3.SuspendLayout();
+            tabControl1.SuspendLayout();
+            tabPage1.SuspendLayout();
+            tabPage2.SuspendLayout();
+            menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // pictureBox1
@@ -86,10 +105,12 @@
             // 
             // propertyGrid1
             // 
-            propertyGrid1.Location = new Point(23, 675);
+            propertyGrid1.HelpVisible = false;
+            propertyGrid1.Location = new Point(3, 6);
             propertyGrid1.Name = "propertyGrid1";
-            propertyGrid1.Size = new Size(341, 346);
+            propertyGrid1.Size = new Size(351, 179);
             propertyGrid1.TabIndex = 2;
+            propertyGrid1.ToolbarVisible = false;
             propertyGrid1.PropertyValueChanged += propertyGrid1_PropertyValueChanged;
             // 
             // panel1
@@ -140,50 +161,6 @@
             txtOutputName.TabIndex = 9;
             txtOutputName.Text = "Image";
             // 
-            // llClearSelection
-            // 
-            llClearSelection.AutoSize = true;
-            llClearSelection.Location = new Point(195, 9);
-            llClearSelection.Name = "llClearSelection";
-            llClearSelection.Size = new Size(130, 25);
-            llClearSelection.TabIndex = 10;
-            llClearSelection.TabStop = true;
-            llClearSelection.Text = "Remove Panels";
-            llClearSelection.LinkClicked += llClearSelection_LinkClicked;
-            // 
-            // llLoadImage
-            // 
-            llLoadImage.AutoSize = true;
-            llLoadImage.Location = new Point(83, 9);
-            llLoadImage.Name = "llLoadImage";
-            llLoadImage.Size = new Size(106, 25);
-            llLoadImage.TabIndex = 11;
-            llLoadImage.TabStop = true;
-            llLoadImage.Text = "Load Image";
-            llLoadImage.LinkClicked += llLoadImage_LinkClicked;
-            // 
-            // llClear
-            // 
-            llClear.AutoSize = true;
-            llClear.Location = new Point(14, 9);
-            llClear.Name = "llClear";
-            llClear.Size = new Size(54, 25);
-            llClear.TabIndex = 12;
-            llClear.TabStop = true;
-            llClear.Text = "Reset";
-            llClear.LinkClicked += llClear_LinkClicked;
-            // 
-            // llExportSelected
-            // 
-            llExportSelected.AutoSize = true;
-            llExportSelected.Location = new Point(331, 9);
-            llExportSelected.Name = "llExportSelected";
-            llExportSelected.Size = new Size(117, 25);
-            llExportSelected.TabIndex = 13;
-            llExportSelected.TabStop = true;
-            llExportSelected.Text = "Export Panels";
-            llExportSelected.LinkClicked += llExportSelected_LinkClicked;
-            // 
             // llGenerate
             // 
             llGenerate.AutoSize = true;
@@ -206,7 +183,7 @@
             groupBox1.Controls.Add(numRows);
             groupBox1.Controls.Add(numCols);
             groupBox1.Controls.Add(llGenerate);
-            groupBox1.Location = new Point(24, 250);
+            groupBox1.Location = new Point(7, 184);
             groupBox1.Name = "groupBox1";
             groupBox1.Size = new Size(340, 215);
             groupBox1.TabIndex = 17;
@@ -291,7 +268,7 @@
             groupBox2.Controls.Add(label7);
             groupBox2.Controls.Add(txtOutputName);
             groupBox2.Controls.Add(label2);
-            groupBox2.Location = new Point(23, 72);
+            groupBox2.Location = new Point(6, 6);
             groupBox2.Name = "groupBox2";
             groupBox2.Size = new Size(341, 172);
             groupBox2.TabIndex = 19;
@@ -322,7 +299,7 @@
             groupBox3.Controls.Add(label8);
             groupBox3.Controls.Add(selectionWidth);
             groupBox3.Controls.Add(selectionHeight);
-            groupBox3.Location = new Point(23, 471);
+            groupBox3.Location = new Point(7, 405);
             groupBox3.Name = "groupBox3";
             groupBox3.Size = new Size(341, 198);
             groupBox3.TabIndex = 20;
@@ -347,20 +324,161 @@
             label8.TabIndex = 6;
             label8.Text = "Minimum Width";
             // 
+            // tabControl1
+            // 
+            tabControl1.Controls.Add(tabPage1);
+            tabControl1.Controls.Add(tabPage2);
+            tabControl1.Location = new Point(12, 69);
+            tabControl1.Name = "tabControl1";
+            tabControl1.SelectedIndex = 0;
+            tabControl1.Size = new Size(362, 1027);
+            tabControl1.TabIndex = 2;
+            // 
+            // tabPage1
+            // 
+            tabPage1.Controls.Add(treeView1);
+            tabPage1.Controls.Add(propertyGrid1);
+            tabPage1.Location = new Point(4, 34);
+            tabPage1.Name = "tabPage1";
+            tabPage1.Padding = new Padding(3);
+            tabPage1.Size = new Size(354, 989);
+            tabPage1.TabIndex = 0;
+            tabPage1.Text = "Panels";
+            tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // treeView1
+            // 
+            treeView1.Location = new Point(4, 190);
+            treeView1.Name = "treeView1";
+            treeView1.Size = new Size(344, 793);
+            treeView1.TabIndex = 3;
+            treeView1.MouseDown += treeView1_MouseDown;
+            // 
+            // tabPage2
+            // 
+            tabPage2.Controls.Add(groupBox3);
+            tabPage2.Controls.Add(groupBox2);
+            tabPage2.Controls.Add(groupBox1);
+            tabPage2.Location = new Point(4, 34);
+            tabPage2.Name = "tabPage2";
+            tabPage2.Padding = new Padding(3);
+            tabPage2.Size = new Size(354, 989);
+            tabPage2.TabIndex = 1;
+            tabPage2.Text = "Settings";
+            tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // menuStrip1
+            // 
+            menuStrip1.ImageScalingSize = new Size(24, 24);
+            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, editToolStripMenuItem, toolsToolStripMenuItem });
+            menuStrip1.Location = new Point(0, 0);
+            menuStrip1.Name = "menuStrip1";
+            menuStrip1.Size = new Size(1681, 33);
+            menuStrip1.TabIndex = 14;
+            menuStrip1.Text = "menuStrip1";
+            // 
+            // fileToolStripMenuItem
+            // 
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { newToolStripMenuItem, openToolStripMenuItem, toolStripSeparator, saveToolStripMenuItem, saveAsToolStripMenuItem, toolStripSeparator2, exitToolStripMenuItem });
+            fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            fileToolStripMenuItem.Size = new Size(54, 29);
+            fileToolStripMenuItem.Text = "&File";
+            // 
+            // newToolStripMenuItem
+            // 
+            newToolStripMenuItem.Image = (Image)resources.GetObject("newToolStripMenuItem.Image");
+            newToolStripMenuItem.ImageTransparentColor = Color.Magenta;
+            newToolStripMenuItem.Name = "newToolStripMenuItem";
+            newToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.N;
+            newToolStripMenuItem.Size = new Size(223, 34);
+            newToolStripMenuItem.Text = "&New";
+            newToolStripMenuItem.Click += newToolStripMenuItem_Click;
+            // 
+            // openToolStripMenuItem
+            // 
+            openToolStripMenuItem.Image = (Image)resources.GetObject("openToolStripMenuItem.Image");
+            openToolStripMenuItem.ImageTransparentColor = Color.Magenta;
+            openToolStripMenuItem.Name = "openToolStripMenuItem";
+            openToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.O;
+            openToolStripMenuItem.Size = new Size(223, 34);
+            openToolStripMenuItem.Text = "&Open";
+            openToolStripMenuItem.Click += openToolStripMenuItem_Click;
+            // 
+            // toolStripSeparator
+            // 
+            toolStripSeparator.Name = "toolStripSeparator";
+            toolStripSeparator.Size = new Size(220, 6);
+            // 
+            // saveToolStripMenuItem
+            // 
+            saveToolStripMenuItem.Image = (Image)resources.GetObject("saveToolStripMenuItem.Image");
+            saveToolStripMenuItem.ImageTransparentColor = Color.Magenta;
+            saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            saveToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.S;
+            saveToolStripMenuItem.Size = new Size(223, 34);
+            saveToolStripMenuItem.Text = "&Save";
+            saveToolStripMenuItem.Click += saveToolStripMenuItem_Click;
+            // 
+            // saveAsToolStripMenuItem
+            // 
+            saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
+            saveAsToolStripMenuItem.Size = new Size(223, 34);
+            saveAsToolStripMenuItem.Text = "Save &As";
+            saveAsToolStripMenuItem.Click += saveAsToolStripMenuItem_Click;
+            // 
+            // toolStripSeparator2
+            // 
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new Size(220, 6);
+            // 
+            // exitToolStripMenuItem
+            // 
+            exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            exitToolStripMenuItem.Size = new Size(223, 34);
+            exitToolStripMenuItem.Text = "E&xit";
+            // 
+            // editToolStripMenuItem
+            // 
+            editToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { toolStripSeparator3, removeAllPanelsToolStripMenuItem });
+            editToolStripMenuItem.Name = "editToolStripMenuItem";
+            editToolStripMenuItem.Size = new Size(58, 29);
+            editToolStripMenuItem.Text = "&Edit";
+            // 
+            // toolStripSeparator3
+            // 
+            toolStripSeparator3.Name = "toolStripSeparator3";
+            toolStripSeparator3.Size = new Size(253, 6);
+            // 
+            // removeAllPanelsToolStripMenuItem
+            // 
+            removeAllPanelsToolStripMenuItem.Name = "removeAllPanelsToolStripMenuItem";
+            removeAllPanelsToolStripMenuItem.Size = new Size(256, 34);
+            removeAllPanelsToolStripMenuItem.Text = "Remove all panels";
+            removeAllPanelsToolStripMenuItem.Click += removeAllPanelsToolStripMenuItem_Click;
+            // 
+            // toolsToolStripMenuItem
+            // 
+            toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { exportImagesToolStripMenuItem });
+            toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            toolsToolStripMenuItem.Size = new Size(69, 29);
+            toolsToolStripMenuItem.Text = "&Tools";
+            // 
+            // exportImagesToolStripMenuItem
+            // 
+            exportImagesToolStripMenuItem.Name = "exportImagesToolStripMenuItem";
+            exportImagesToolStripMenuItem.Size = new Size(228, 34);
+            exportImagesToolStripMenuItem.Text = "Export Images";
+            exportImagesToolStripMenuItem.Click += exportImagesToolStripMenuItem_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1681, 1108);
-            Controls.Add(groupBox3);
-            Controls.Add(propertyGrid1);
-            Controls.Add(groupBox2);
-            Controls.Add(groupBox1);
-            Controls.Add(llExportSelected);
-            Controls.Add(llClear);
-            Controls.Add(llLoadImage);
-            Controls.Add(llClearSelection);
+            Controls.Add(tabControl1);
             Controls.Add(panel1);
+            Controls.Add(menuStrip1);
+            MainMenuStrip = menuStrip1;
             Name = "Form1";
             Text = "Form1";
             Load += Form1_Load;
@@ -379,6 +497,11 @@
             ((System.ComponentModel.ISupportInitialize)panelNumStart).EndInit();
             groupBox3.ResumeLayout(false);
             groupBox3.PerformLayout();
+            tabControl1.ResumeLayout(false);
+            tabPage1.ResumeLayout(false);
+            tabPage2.ResumeLayout(false);
+            menuStrip1.ResumeLayout(false);
+            menuStrip1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -391,10 +514,6 @@
         private NumericUpDown selectionHeight;
         private Label label2;
         private TextBox txtOutputName;
-        private LinkLabel llClearSelection;
-        private LinkLabel llLoadImage;
-        private LinkLabel llClear;
-        private LinkLabel llExportSelected;
         private LinkLabel llGenerate;
         private GroupBox groupBox1;
         private NumericUpDown padH;
@@ -411,5 +530,23 @@
         private GroupBox groupBox3;
         private Label label9;
         private Label label8;
+        private TabControl tabControl1;
+        private TabPage tabPage1;
+        private TabPage tabPage2;
+        private TreeView treeView1;
+        private MenuStrip menuStrip1;
+        private ToolStripMenuItem fileToolStripMenuItem;
+        private ToolStripMenuItem newToolStripMenuItem;
+        private ToolStripMenuItem openToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator;
+        private ToolStripMenuItem saveToolStripMenuItem;
+        private ToolStripMenuItem saveAsToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator2;
+        private ToolStripMenuItem exitToolStripMenuItem;
+        private ToolStripMenuItem editToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator3;
+        private ToolStripMenuItem toolsToolStripMenuItem;
+        private ToolStripMenuItem removeAllPanelsToolStripMenuItem;
+        private ToolStripMenuItem exportImagesToolStripMenuItem;
     }
 }
