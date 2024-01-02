@@ -24,7 +24,7 @@ Panels will contain a number indicating the order in which they were added, whic
 
 The tab settings on the main form contains a section called *Generate Panels*, which is used to automatically generate a set of panels on the loading images. The number of panels per row and number of columns can be specified, along with horizontal and vertical panel paddings. This assumes the image has regular spaced panel, and is a quick way to get started.
 
-**Editing Panerls**
+**Editing Panels**
 
 The tab panels on the main form contains a treeview of added panels and a property grid which displays various values of the selected item.
 
