@@ -31,7 +31,7 @@ namespace ImageSlicer
 
         }
 
-        public Color LineColour { get; set; } = Color.Blue;
+        
         public Color HandleColour { get; set; } = Color.Black;
         public Color HandleFill { get; set; } = Color.White;
         public Color BodyFill { get; set; } = Color.FromArgb(128, Color.White);
@@ -149,6 +149,8 @@ namespace ImageSlicer
         {
             g.FillPolygon(_BodyBrush, Points.ToArray());
             g.DrawPolygon(_LinePen, Points.ToArray());
+
+            base.Draw(g);
 
             if (!Selected)
                 return;

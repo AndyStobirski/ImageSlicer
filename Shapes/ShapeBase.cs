@@ -17,7 +17,13 @@ namespace ImageSlicer
             ID = Guid.NewGuid().ToString();
         }
 
+        public Color LineColour { get; set; } = Color.Blue;
+
         protected int _handleSize = 12;
+
+        /// <summary>
+        /// String description of the shAPE
+        /// </summary>
         public string ShapeType { get; protected set; }
 
         [Browsable(false)]
@@ -29,7 +35,26 @@ namespace ImageSlicer
 
         public Point Origin { get; set; }
 
-        public abstract void Draw(Graphics g);
+        public virtual void Draw(Graphics g)
+        {
+            var Bounds = GetBoundingRectangle();
+
+            //draw its order number
+            SizeF textSize = g.MeasureString(Order.ToString(), _font);
+            RectangleF textBounds = new RectangleF(
+                    new Point((Bounds.Left + Bounds.Width / 2) - Convert.ToInt32(textSize.Width / 2), (Bounds.Top + Bounds.Height / 2) - Convert.ToInt32(textSize.Height / 2))
+                    , textSize
+                );
+
+            g.DrawString(Order.ToString(), _font, _fontBrush, textBounds);
+        }
+
+        #region font defintions
+
+        private Font _font = new Font("Arial", 24);
+        private SolidBrush _fontBrush => new SolidBrush(LineColour);
+
+        #endregion
 
         public abstract bool HitTest(int pX, int pY);
 
