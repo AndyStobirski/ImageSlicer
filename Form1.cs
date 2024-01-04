@@ -7,6 +7,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.ProgressBar;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 using ImageSlicer;
+using ImageSlicer.ImageExractors;
 
 namespace Cropper
 {
@@ -20,18 +21,34 @@ namespace Cropper
         /// <summary>
         /// Panels added to the image
         /// </summary>
-        List<SelectionPanel> _selectionPanels;
+        List<ShapeBase> _selectionPanels;
 
         /// <summary>
         /// Panel hit detection
         /// </summary>
-        SelectionPanel _panelDown;
+        ShapeBase _panelDown;
         SelectionPartHit _panelPartDown;
-        SelectionPanel _panelOver;
+        ShapeBase _panelOver;
         SelectionPartHit _panelPartOver;
-        SelectionPanel _selectedPanel;
 
-        Point _dragOffset;  //when mouse down occurs in a panel, record it's position relative to the panel origin
+
+
+        ShapeBase _SelectedShape;
+        public ShapeBase SelectedShape
+        {
+            get { return _SelectedShape; }
+            set
+            {
+
+                foreach (var p in _selectionPanels)
+                {
+                    p.Selected = p == value;
+                }
+
+                _SelectedShape = value;
+            }
+        }
+
 
         /// <summary>
         /// Mouse operations
@@ -59,8 +76,8 @@ namespace Cropper
             DoubleBuffered = true;
             pictureBox1.SizeMode = PictureBoxSizeMode.AutoSize;
             //pictureBox1.Image = new Bitmap(@"C:\Users\andy\Pictures\Scans\Viz59\ColditsKids\Colditz Kids.png");
-            //_selectionPanels = new List<SelectionPanel>();
-            pictureBox1.Invalidate();
+            //_selectionPanels = new List<ShapeBase>();
+            // pictureBox1.Invalidate();
         }
 
         #region Picturebox Events
@@ -74,7 +91,7 @@ namespace Cropper
         {
             if (!_imageLoaded) return;
 
-            foreach (SelectionPanel s in _selectionPanels)
+            foreach (ShapeBase s in _selectionPanels)
             {
                 s.Draw(e.Graphics);
             }
@@ -96,26 +113,24 @@ namespace Cropper
 
             _IsMouseDown = true;
             _mouseDownLocation = new Point(e.X, e.Y);
+            SelectedShape = null;
+            propertyGrid1.SelectedObject = null;
 
             if (_panelOver != null)
             {
-                _selectedPanel = _panelDown = _panelOver;
+                SelectedShape = _panelDown = _panelOver;
                 _panelPartDown = _panelPartOver;
-                _dragOffset = new Point(e.X - _panelDown.Location.X, e.Y - _panelDown.Location.Y);
-                _selectionPanels.Where(s => s != _selectedPanel).ToList().ForEach(s => s.Unselect());
+
             }
             else
             {
-                _selectedPanel = _panelOver = _panelDown = null;
+                SelectedShape = _panelOver = _panelDown = null;
                 _panelPartDown = _panelPartDown = SelectionPartHit.none;
-                _dragOffset = Point.Empty;
-
-                _selectionPanels.ForEach(s => s.Unselect());
                 pictureBox1.Invalidate();
             }
 
 
-            propertyGrid1.SelectedObject = _selectedPanel;
+            propertyGrid1.SelectedObject = SelectedShape;
             propertyGrid1.Refresh();
 
         }
@@ -134,9 +149,9 @@ namespace Cropper
 
                 _panelDown = _panelOver = null;
                 _panelPartOver = SelectionPartHit.none;
-                foreach (SelectionPanel selection in _selectionPanels)
+                foreach (ShapeBase selection in _selectionPanels)
                 {
-                    if (selection.IsHit(e.X, e.Y))
+                    if (selection.HitTest(e.X, e.Y))
                     {
                         _panelOver = selection;
                         _panelPartOver = selection.ItemHit;
@@ -177,17 +192,21 @@ namespace Cropper
                 {
                     _SelectionRectangle = Rectangle.Empty;
 
+                    Point delta = new Point(e.X - _mouseDownLocation.X, e.Y - _mouseDownLocation.Y);
+
                     switch (_panelPartDown)
                     {
                         case SelectionPartHit.body:
-                            _panelDown.DragShape(e.X - _dragOffset.X, e.Y - _dragOffset.Y);
+                            _panelDown.Drag(delta.X, delta.Y);
                             break;
 
                         default:
-                            _panelDown.DragHandle(e.X, e.Y, _panelPartDown);
+                            _panelDown.MoveHandle(delta.X, delta.Y);
                             break;
 
                     }
+
+                    _mouseDownLocation = new Point(e.X, e.Y);
                 }
 
                 pictureBox1.Invalidate();
@@ -227,8 +246,22 @@ namespace Cropper
         private void Form1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             if (!_imageLoaded) return;
-            AddPanel(e.X, e.Y, (int)selectionWidth.Value, (int)selectionHeight.Value);
+
+            if (SelectedShape != null && SelectedShape is ShapePolygon)
+            {
+                if (SelectedShape.ItemHit == SelectionPartHit.dragHandle)
+                {
+                    (SelectedShape as ShapePolygon).DeleteHandle();
+                }
+                this.Invalidate();
+            }
+            else
+            {
+                AddPanel(e.X, e.Y, (int)selectionWidth.Value, (int)selectionHeight.Value);
+            }
         }
+
+
 
         #endregion
 
@@ -238,7 +271,7 @@ namespace Cropper
         /// Add a panel into the treeview
         /// </summary>
         /// <param name="pNewPanel"></param>
-        public void AddPanelToTree(SelectionPanel pNewPanel)
+        public void AddPanelToTree(ShapeBase pNewPanel)
         {
             treeView1.Nodes.Add(pNewPanel.ID.ToString(), pNewPanel.Name);
         }
@@ -247,7 +280,7 @@ namespace Cropper
         /// Remove the specified panel from the treeview
         /// </summary>
         /// <param name="pPanel"></param>
-        public void RemovePanel(SelectionPanel pPanel)
+        public void RemovePanel(ShapeBase pPanel)
         {
             treeView1.Nodes.Remove
                 (
@@ -268,18 +301,55 @@ namespace Cropper
 
             if (n != null)
             {
-                _selectedPanel = _panelDown = _panelOver = _selectionPanels.First(p => p.ID.ToString() == n.Name);
-                _selectedPanel.ItemHit = SelectionPartHit.body;
+                SelectedShape = _panelDown = _panelOver = _selectionPanels.First(p => p.ID.ToString() == n.Name);
+                SelectedShape.ItemHit = SelectionPartHit.body;
                 _panelPartDown = _panelPartOver = SelectionPartHit.body;
-                propertyGrid1.SelectedObject = _selectedPanel;
-                _selectionPanels.Where(s => s != _selectedPanel).ToList().ForEach(s => s.Unselect());
+                propertyGrid1.SelectedObject = SelectedShape;
+
                 pictureBox1.Invalidate();
             }
         }
 
+
+        /// <summary>
+        /// Check for clicks on the delete button on the panel
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void pictureBox1_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (SelectedShape != null && SelectedShape.ItemHit == SelectionPartHit.deletebutton)
+            {
+                RemovePanel(SelectedShape);
+                _selectionPanels.Remove(SelectedShape);
+
+            }
+            else if (SelectedShape != null && SelectedShape is ShapePolygon)
+            {
+                if (SelectedShape.ItemHit == SelectionPartHit.line)
+                {
+                    (SelectedShape as ShapePolygon).AddHandle(e.X, e.Y);
+                }
+            }
+            pictureBox1.Invalidate();
+        }
+
         #endregion
 
+        private ShapeBase ShapeToAdd(int pX, int pY, int pWidth, int pHeight)
+        {
 
+            if (circleToolStripMenuItem.Checked)
+            {
+                return new ShapeCircle(pX, pY);
+            }
+            else if (rectangleToolStripMenuItem.Checked)
+            {
+                return new ShapeRectangle(pX, pY, pWidth, pHeight);
+            }
+            else
+                return new ShapePolygon(pX, pY);
+        }
 
         /// <summary>
         /// Add a panel onto the form
@@ -290,7 +360,7 @@ namespace Cropper
         /// <param name="h"></param>
         public void AddPanel(int x, int y, int w, int h)
         {
-            var panel = new SelectionPanel(x, y, w, h);            
+            var panel = ShapeToAdd(x, y, w, h);
             panel.Order = _selectionPanels.Count;
 
             _selectionPanels.Add(panel);
@@ -307,23 +377,14 @@ namespace Cropper
         public void ExportImages(string outputDirectory, int pStartNumber, string pImageName)
         {
             var sourceImage = pictureBox1.Image;
-
-
-
-            foreach (SelectionPanel selection in _selectionPanels)
+            foreach (ShapeBase selection in _selectionPanels)
             {
-                using (Bitmap croppedImage = new Bitmap(selection.PanelSize.Width, selection.PanelSize.Height))
-                {
-                    using (Graphics g = Graphics.FromImage(croppedImage))
-                    {
-                        // Draw the portion of the image within the rectangle onto the new bitmap
-                        g.DrawImage(sourceImage, new Rectangle(0, 0, croppedImage.Width, croppedImage.Height),
-                            selection.Bounds, GraphicsUnit.Pixel);
-                    }
+                // Save the cropped image to a file
+                string outputFilePath = Path.Combine(outputDirectory, $"{pImageName}_{selection.Order + pStartNumber}.png");
 
-                    // Save the cropped image to a file
-                    string outputFilePath = Path.Combine(outputDirectory, $"{pImageName}_{selection.Order - 1 + pStartNumber}.png");
-                    croppedImage.Save(outputFilePath, ImageFormat.Png);
+                if (selection is ShapeRectangle || selection is ShapePolygon)
+                {
+                    ImageExtractor.ExtractAreaUnderPolygon(sourceImage, (selection as ShapePolygonBase).Points.ToArray(), outputFilePath);
                 }
             }
 
@@ -363,13 +424,13 @@ namespace Cropper
 
                     _selectionPanels.Add(
 
-                            new SelectionPanel(x, y, panelWidth, panelHeight) { Order = order }
+                            new ShapeRectangle(x, y, panelWidth, panelHeight) { Order = order }
 
                         );
 
                     order++;
 
-                    _selectionPanels.Last().Unselect();
+                    _selectionPanels.Last().Selected = false;
 
                 }
 
@@ -378,20 +439,6 @@ namespace Cropper
             }
         }
 
-        /// <summary>
-        /// Check for clicks on the delete button on the panel
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void pictureBox1_MouseClick(object sender, MouseEventArgs e)
-        {
-            if (_selectedPanel != null && _selectedPanel.ItemHit == SelectionPartHit.deletebutton)
-            {
-                RemovePanel(_selectedPanel);
-                _selectionPanels.Remove(_selectedPanel);
-                pictureBox1.Invalidate();
-            }
-        }
 
         #endregion
 
@@ -419,6 +466,7 @@ namespace Cropper
             _selectionPanels.Clear();
             propertyGrid1.SelectedObject = null;
             pictureBox1.Invalidate();
+            treeView1.Nodes.Clear();
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -431,8 +479,9 @@ namespace Cropper
 
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
+                    treeView1.Nodes.Clear();
                     _imageSourceFolder = Path.GetDirectoryName(openFileDialog.FileName);
-                    _selectionPanels = new List<SelectionPanel>();
+                    _selectionPanels = new List<ShapeBase>();
                     pictureBox1.Image = new Bitmap(openFileDialog.FileName);
                     pictureBox1.Invalidate();
                 }
@@ -453,13 +502,6 @@ namespace Cropper
 
         }
 
-        private void removeAllPanelsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            treeView1.Nodes.Clear();
-            _selectionPanels.Clear();
-            pictureBox1.Invalidate();
-            propertyGrid1.SelectedObject = null;
-        }
 
         private void exportImagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -472,7 +514,7 @@ namespace Cropper
                 MessageBox.Show("Must select image portions");
             }
             else
-            {                
+            {
                 frmExportOptions popupForm = new frmExportOptions();
                 popupForm.ImageSourceFolder = _imageSourceFolder;
                 if (popupForm.ShowDialog() == DialogResult.OK)
@@ -480,11 +522,41 @@ namespace Cropper
                     ExportImages(popupForm.ImageSourceFolder, popupForm.PanelStartNumber, popupForm.ImageName);
                 }
             }
-            }
         }
 
-        #endregion
+        private void polygonToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            circleToolStripMenuItem.Checked = false;
+            rectangleToolStripMenuItem.Checked = false;
+            polygonToolStripMenuItem.Checked = true;
+        }
 
+        private void rectangleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            circleToolStripMenuItem.Checked = false;
+            rectangleToolStripMenuItem.Checked = true;
+            polygonToolStripMenuItem.Checked = false;
+        }
 
+        private void circleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            circleToolStripMenuItem.Checked = true;
+            rectangleToolStripMenuItem.Checked = false;
+            polygonToolStripMenuItem.Checked = false;
 
+        }
+
+        private void removeAllPanelsToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            treeView1.Nodes.Clear();
+            _selectionPanels.Clear();
+            pictureBox1.Invalidate();
+            propertyGrid1.SelectedObject = null;
+        }
     }
+
+    #endregion
+
+
+
+}

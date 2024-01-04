@@ -65,11 +65,13 @@
             saveAsToolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator2 = new ToolStripSeparator();
             exitToolStripMenuItem = new ToolStripMenuItem();
-            editToolStripMenuItem = new ToolStripMenuItem();
-            toolStripSeparator3 = new ToolStripSeparator();
-            removeAllPanelsToolStripMenuItem = new ToolStripMenuItem();
             toolsToolStripMenuItem = new ToolStripMenuItem();
             exportImagesToolStripMenuItem = new ToolStripMenuItem();
+            removeAllPanelsToolStripMenuItem1 = new ToolStripMenuItem();
+            drawToolStripMenuItem = new ToolStripMenuItem();
+            polygonToolStripMenuItem = new ToolStripMenuItem();
+            rectangleToolStripMenuItem = new ToolStripMenuItem();
+            circleToolStripMenuItem = new ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)selectionWidth).BeginInit();
@@ -119,9 +121,9 @@
             panel1.AutoScroll = true;
             panel1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             panel1.Controls.Add(pictureBox1);
-            panel1.Location = new Point(376, 37);
+            panel1.Location = new Point(376, 70);
             panel1.Name = "panel1";
-            panel1.Size = new Size(1292, 1054);
+            panel1.Size = new Size(1292, 1021);
             panel1.TabIndex = 3;
             // 
             // selectionWidth
@@ -370,7 +372,7 @@
             // menuStrip1
             // 
             menuStrip1.ImageScalingSize = new Size(24, 24);
-            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, editToolStripMenuItem, toolsToolStripMenuItem });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, toolsToolStripMenuItem, drawToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(1681, 33);
@@ -437,28 +439,9 @@
             exitToolStripMenuItem.Size = new Size(223, 34);
             exitToolStripMenuItem.Text = "E&xit";
             // 
-            // editToolStripMenuItem
-            // 
-            editToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { toolStripSeparator3, removeAllPanelsToolStripMenuItem });
-            editToolStripMenuItem.Name = "editToolStripMenuItem";
-            editToolStripMenuItem.Size = new Size(58, 29);
-            editToolStripMenuItem.Text = "&Edit";
-            // 
-            // toolStripSeparator3
-            // 
-            toolStripSeparator3.Name = "toolStripSeparator3";
-            toolStripSeparator3.Size = new Size(253, 6);
-            // 
-            // removeAllPanelsToolStripMenuItem
-            // 
-            removeAllPanelsToolStripMenuItem.Name = "removeAllPanelsToolStripMenuItem";
-            removeAllPanelsToolStripMenuItem.Size = new Size(256, 34);
-            removeAllPanelsToolStripMenuItem.Text = "Remove all panels";
-            removeAllPanelsToolStripMenuItem.Click += removeAllPanelsToolStripMenuItem_Click;
-            // 
             // toolsToolStripMenuItem
             // 
-            toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { exportImagesToolStripMenuItem });
+            toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { exportImagesToolStripMenuItem, removeAllPanelsToolStripMenuItem1 });
             toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             toolsToolStripMenuItem.Size = new Size(69, 29);
             toolsToolStripMenuItem.Text = "&Tools";
@@ -466,9 +449,50 @@
             // exportImagesToolStripMenuItem
             // 
             exportImagesToolStripMenuItem.Name = "exportImagesToolStripMenuItem";
-            exportImagesToolStripMenuItem.Size = new Size(228, 34);
-            exportImagesToolStripMenuItem.Text = "Export Images";
+            exportImagesToolStripMenuItem.Size = new Size(270, 34);
+            exportImagesToolStripMenuItem.Text = "Export Panels";
             exportImagesToolStripMenuItem.Click += exportImagesToolStripMenuItem_Click;
+            // 
+            // removeAllPanelsToolStripMenuItem1
+            // 
+            removeAllPanelsToolStripMenuItem1.Name = "removeAllPanelsToolStripMenuItem1";
+            removeAllPanelsToolStripMenuItem1.Size = new Size(270, 34);
+            removeAllPanelsToolStripMenuItem1.Text = "Remove all Panels";
+            removeAllPanelsToolStripMenuItem1.Click += removeAllPanelsToolStripMenuItem1_Click;
+            // 
+            // drawToolStripMenuItem
+            // 
+            drawToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { polygonToolStripMenuItem, rectangleToolStripMenuItem, circleToolStripMenuItem });
+            drawToolStripMenuItem.Name = "drawToolStripMenuItem";
+            drawToolStripMenuItem.Size = new Size(85, 29);
+            drawToolStripMenuItem.Text = "Shapes";
+            // 
+            // polygonToolStripMenuItem
+            // 
+            polygonToolStripMenuItem.CheckOnClick = true;
+            polygonToolStripMenuItem.Name = "polygonToolStripMenuItem";
+            polygonToolStripMenuItem.Size = new Size(190, 34);
+            polygonToolStripMenuItem.Text = "Polygon";
+            polygonToolStripMenuItem.Click += polygonToolStripMenuItem_Click;
+            // 
+            // rectangleToolStripMenuItem
+            // 
+            rectangleToolStripMenuItem.Checked = true;
+            rectangleToolStripMenuItem.CheckOnClick = true;
+            rectangleToolStripMenuItem.CheckState = CheckState.Checked;
+            rectangleToolStripMenuItem.Name = "rectangleToolStripMenuItem";
+            rectangleToolStripMenuItem.Size = new Size(190, 34);
+            rectangleToolStripMenuItem.Text = "Rectangle";
+            rectangleToolStripMenuItem.Click += rectangleToolStripMenuItem_Click;
+            // 
+            // circleToolStripMenuItem
+            // 
+            circleToolStripMenuItem.CheckOnClick = true;
+            circleToolStripMenuItem.Enabled = false;
+            circleToolStripMenuItem.Name = "circleToolStripMenuItem";
+            circleToolStripMenuItem.Size = new Size(190, 34);
+            circleToolStripMenuItem.Text = "Circle";
+            circleToolStripMenuItem.Click += circleToolStripMenuItem_Click;
             // 
             // Form1
             // 
@@ -480,7 +504,7 @@
             Controls.Add(menuStrip1);
             MainMenuStrip = menuStrip1;
             Name = "Form1";
-            Text = "Form1";
+            Text = "Image Slicer";
             Load += Form1_Load;
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             panel1.ResumeLayout(false);
@@ -543,10 +567,12 @@
         private ToolStripMenuItem saveAsToolStripMenuItem;
         private ToolStripSeparator toolStripSeparator2;
         private ToolStripMenuItem exitToolStripMenuItem;
-        private ToolStripMenuItem editToolStripMenuItem;
-        private ToolStripSeparator toolStripSeparator3;
         private ToolStripMenuItem toolsToolStripMenuItem;
-        private ToolStripMenuItem removeAllPanelsToolStripMenuItem;
         private ToolStripMenuItem exportImagesToolStripMenuItem;
+        private ToolStripMenuItem drawToolStripMenuItem;
+        private ToolStripMenuItem polygonToolStripMenuItem;
+        private ToolStripMenuItem rectangleToolStripMenuItem;
+        private ToolStripMenuItem circleToolStripMenuItem;
+        private ToolStripMenuItem removeAllPanelsToolStripMenuItem1;
     }
 }

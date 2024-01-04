@@ -1,6 +1,6 @@
 # Image Slicer
 
-This app allows an image to be exported as a series of rectangles which are drawn onto the loaded image, and are known as **panels**.
+This app allows an image to be exported as a series of rectangles or polygons which are drawn onto the loaded image, and are known as **panels**.
 
 This project was authored in Visual Studio 2022, and requires no fancy plugins or extensions, and in short should work out of the box.
 
@@ -13,6 +13,9 @@ This app is covered by the MIT license which is contained in the root directory 
 Select File > Open to select an image to display.
 
 ### Adding panels
+
+**Panel Types**
+The menu Draw is used to select the panel being drawn: Polygon or Rectangle
 
 **Manual**
 
@@ -30,7 +33,9 @@ The tab panels on the main form contains a treeview of added panels and a proper
 
 A panel can be deleted by clicking the X in the top right corner, and resized by the horizontal and vertical grab handles.
 
-All panels can be removed can by Selecting Edit > Remove All Panels.
+All panels can be removed can by Selecting Tools > Remove All Panels.
+
+Polygon panels can have another point adding by clicking on a line, and a point can be removed by double clicking it.
 
 ### Exporting images
 
@@ -48,7 +53,6 @@ Imageorder is set when panels are added, and can offset by specifying an offset 
 
 Things it needs:
 
-* Add a polygon shape for non-rectangular images.
 * Add feature to save panel maps
 * Add undo / redo (I'll never do this, to be honest)
 * Add a duplicate panel feature

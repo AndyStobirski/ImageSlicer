@@ -48,11 +48,11 @@ namespace ImageSlicer
         /// <param name="e"></param>
         private void button1_Click(object sender, EventArgs e)
         {
-            frmExportOptions popupForm = new frmExportOptions();
-            popupForm.ImageSourceFolder = ImageSourceFolder;
+            FolderBrowserDialog popupForm = new FolderBrowserDialog();
+            popupForm.InitialDirectory = ImageSourceFolder;
             if (popupForm.ShowDialog() == DialogResult.OK)
             {
-                ImageSourceFolder = txtPath.Text = popupForm.ImageSourceFolder;
+                ImageSourceFolder = txtPath.Text = popupForm.SelectedPath;
             }
         }
 
