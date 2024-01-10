@@ -17,7 +17,7 @@ namespace ImageSlicer
             IsPolygon = true;
             ShapeType = "Polygon";
 
-            float width = 50;
+            float width = 150;
             double angle = 2 * Math.PI / 5; // Angle between each point
 
             // Adjust starting angle to create a flat bottom edge

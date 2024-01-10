@@ -8,6 +8,8 @@ using System.Diagnostics;
 using System.Runtime.Serialization;
 using ImageSlicer;
 using ImageSlicer.ImageExractors;
+using ImageSlicer.Utilties;
+using System.IO;
 
 namespace Cropper
 {
@@ -18,37 +20,16 @@ namespace Cropper
             InitializeComponent();
         }
 
-        /// <summary>
-        /// Panels added to the image
-        /// </summary>
-        List<ShapeBase> _selectionPanels;
+        string _ProjectFilter = "SliceSave|*.slicesave";
 
         /// <summary>
-        /// Panel hit detection
+        /// Location of saved panels
         /// </summary>
-        ShapeBase _panelDown;
-        SelectionPartHit _panelPartDown;
-        ShapeBase _panelOver;
-        SelectionPartHit _panelPartOver;
+        string _PanelSavePath;
 
+        ImageSave _currentImage;
 
-
-        ShapeBase _SelectedShape;
-        public ShapeBase SelectedShape
-        {
-            get { return _SelectedShape; }
-            set
-            {
-
-                foreach (var p in _selectionPanels)
-                {
-                    p.Selected = p == value;
-                }
-
-                _SelectedShape = value;
-            }
-        }
-
+        string _imageSourceFolder;
 
         /// <summary>
         /// Mouse operations
@@ -65,19 +46,16 @@ namespace Cropper
         /// <summary>
         /// Source of the image
         /// </summary>
-        string _imageSourceFolder;
 
-
-        private bool _imageLoaded => pictureBox1.Image != null;
 
 
         private void Form1_Load(object sender, EventArgs e)
         {
             DoubleBuffered = true;
             pictureBox1.SizeMode = PictureBoxSizeMode.AutoSize;
-            //pictureBox1.Image = new Bitmap(@"C:\Users\andy\Pictures\Scans\Viz59\ColditsKids\Colditz Kids.png");
-            //_selectionPanels = new List<ShapeBase>();
-            // pictureBox1.Invalidate();
+
+            Init(false);
+
         }
 
         #region Picturebox Events
@@ -89,9 +67,12 @@ namespace Cropper
         /// <param name="e"></param>
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            if (!_imageLoaded) return;
+            if (!_currentImage.ImageLoaded) return;
 
-            foreach (ShapeBase s in _selectionPanels)
+            e.Graphics.DrawImage(_currentImage.Image, new Point(0, 0));
+
+
+            foreach (ShapeBase s in _currentImage.SectionPanels)
             {
                 s.Draw(e.Graphics);
             }
@@ -109,28 +90,28 @@ namespace Cropper
         /// <param name="e"></param>
         private void Form1_MouseDown(object sender, MouseEventArgs e)
         {
-            if (!_imageLoaded) return;
+            if (!_currentImage.ImageLoaded) return;
 
             _IsMouseDown = true;
             _mouseDownLocation = new Point(e.X, e.Y);
-            SelectedShape = null;
+            _currentImage.SelectedShape = null;
             propertyGrid1.SelectedObject = null;
 
-            if (_panelOver != null)
+            if (_currentImage.PanelOver != null)
             {
-                SelectedShape = _panelDown = _panelOver;
-                _panelPartDown = _panelPartOver;
+                _currentImage.SelectedShape = _currentImage.PanelDown = _currentImage.PanelOver;
+                _currentImage.PanelPartDown = _currentImage.PanelPartOver;
 
             }
             else
             {
-                SelectedShape = _panelOver = _panelDown = null;
-                _panelPartDown = _panelPartDown = SelectionPartHit.none;
+                _currentImage.SelectedShape = _currentImage.PanelOver = _currentImage.PanelDown = null;
+                _currentImage.PanelPartDown = _currentImage.PanelPartDown = SelectionPartHit.none;
                 pictureBox1.Invalidate();
             }
 
 
-            propertyGrid1.SelectedObject = SelectedShape;
+            propertyGrid1.SelectedObject = _currentImage.SelectedShape;
             propertyGrid1.Refresh();
 
         }
@@ -143,31 +124,31 @@ namespace Cropper
         private void Form1_MouseMove(object sender, MouseEventArgs e)
         {
 
-            if (!_imageLoaded) return;
+            if (!_currentImage.ImageLoaded) return;
             if (!_IsMouseDown)
             {
 
-                _panelDown = _panelOver = null;
-                _panelPartOver = SelectionPartHit.none;
-                foreach (ShapeBase selection in _selectionPanels)
+                _currentImage.PanelDown = _currentImage.PanelOver = null;
+                _currentImage.PanelPartOver = SelectionPartHit.none;
+                foreach (ShapeBase selection in _currentImage.SectionPanels)
                 {
                     if (selection.HitTest(e.X, e.Y))
                     {
-                        _panelOver = selection;
-                        _panelPartOver = selection.ItemHit;
+                        _currentImage.PanelOver = selection;
+                        _currentImage.PanelPartOver = selection.ItemHit;
                         break;
                     }
                 }
 
-                if (_panelOver == null || _panelPartOver == SelectionPartHit.none)
+                if (_currentImage.PanelOver == null || _currentImage.PanelPartOver == SelectionPartHit.none)
                 {
                     Cursor = Cursors.Default; // Change cursor back to default
                 }
-                else if (_panelPartOver == SelectionPartHit.body)
+                else if (_currentImage.PanelPartOver == SelectionPartHit.body)
                 {
                     Cursor = Cursors.SizeAll; // Change cursor when over the Selection rectangle
                 }
-                else if (_panelPartOver == SelectionPartHit.deletebutton)
+                else if (_currentImage.PanelPartOver == SelectionPartHit.deletebutton)
                 {
                     Cursor = Cursors.Hand;
                 }
@@ -179,7 +160,7 @@ namespace Cropper
             }
             else
             {
-                if (_panelDown == null) //we're drawing a pane
+                if (_currentImage.PanelDown == null) //we're drawing a pane
                 {
                     int width = Math.Abs(e.X - _mouseDownLocation.X);
                     int height = Math.Abs(e.Y - _mouseDownLocation.Y);
@@ -194,14 +175,14 @@ namespace Cropper
 
                     Point delta = new Point(e.X - _mouseDownLocation.X, e.Y - _mouseDownLocation.Y);
 
-                    switch (_panelPartDown)
+                    switch (_currentImage.PanelPartDown)
                     {
                         case SelectionPartHit.body:
-                            _panelDown.Drag(delta.X, delta.Y);
+                            _currentImage.PanelDown.Drag(delta.X, delta.Y);
                             break;
 
                         default:
-                            _panelDown.MoveHandle(delta.X, delta.Y);
+                            _currentImage.PanelDown.MoveHandle(delta.X, delta.Y);
                             break;
 
                     }
@@ -220,7 +201,7 @@ namespace Cropper
         /// <param name="e"></param>
         private void Form1_MouseUp(object sender, MouseEventArgs e)
         {
-            if (!_imageLoaded) return;
+            if (!_currentImage.ImageLoaded) return;
 
             _IsMouseDown = false;
 
@@ -245,13 +226,13 @@ namespace Cropper
         /// <param name="e"></param>
         private void Form1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            if (!_imageLoaded) return;
+            if (!_currentImage.ImageLoaded) return;
 
-            if (SelectedShape != null && SelectedShape is ShapePolygon)
+            if (_currentImage.SelectedShape != null && _currentImage.SelectedShape is ShapePolygon)
             {
-                if (SelectedShape.ItemHit == SelectionPartHit.dragHandle)
+                if (_currentImage.SelectedShape.ItemHit == SelectionPartHit.dragHandle)
                 {
-                    (SelectedShape as ShapePolygon).DeleteHandle();
+                    (_currentImage.SelectedShape as ShapePolygon).DeleteHandle();
                 }
                 this.Invalidate();
             }
@@ -265,7 +246,23 @@ namespace Cropper
 
         #endregion
 
+        private void SetImage()
+        {
+            pictureBox1.Width = _currentImage.Image.Width;
+            pictureBox1.Height = _currentImage.Image.Height;
+            pictureBox1.Invalidate();
+        }
+
         #region treeview code
+
+
+        private void PopulateTree()
+        {
+            foreach(var panel in _currentImage.SectionPanels.OrderBy(p=>p.Order))
+            {
+                AddPanelToTree(panel);
+            }
+        }
 
         /// <summary>
         /// Add a panel into the treeview
@@ -301,10 +298,10 @@ namespace Cropper
 
             if (n != null)
             {
-                SelectedShape = _panelDown = _panelOver = _selectionPanels.First(p => p.ID.ToString() == n.Name);
-                SelectedShape.ItemHit = SelectionPartHit.body;
-                _panelPartDown = _panelPartOver = SelectionPartHit.body;
-                propertyGrid1.SelectedObject = SelectedShape;
+                _currentImage.SelectedShape = _currentImage.PanelDown = _currentImage.PanelOver = _currentImage.SectionPanels.First(p => p.ID.ToString() == n.Name);
+                _currentImage.SelectedShape.ItemHit = SelectionPartHit.body;
+                _currentImage.PanelPartDown = _currentImage.PanelPartOver = SelectionPartHit.body;
+                propertyGrid1.SelectedObject = _currentImage.SelectedShape;
 
                 pictureBox1.Invalidate();
             }
@@ -318,17 +315,17 @@ namespace Cropper
         /// <param name="e"></param>
         private void pictureBox1_MouseClick(object sender, MouseEventArgs e)
         {
-            if (SelectedShape != null && SelectedShape.ItemHit == SelectionPartHit.deletebutton)
+            if (_currentImage.SelectedShape != null && _currentImage.SelectedShape.ItemHit == SelectionPartHit.deletebutton)
             {
-                RemovePanel(SelectedShape);
-                _selectionPanels.Remove(SelectedShape);
+                RemovePanel(_currentImage.SelectedShape);
+                _currentImage.SectionPanels.Remove(_currentImage.SelectedShape);
 
             }
-            else if (SelectedShape != null && SelectedShape is ShapePolygon)
+            else if (_currentImage.SelectedShape != null && _currentImage.SelectedShape is ShapePolygon)
             {
-                if (SelectedShape.ItemHit == SelectionPartHit.line)
+                if (_currentImage.SelectedShape.ItemHit == SelectionPartHit.line)
                 {
-                    (SelectedShape as ShapePolygon).AddHandle(e.X, e.Y);
+                    (_currentImage.SelectedShape as ShapePolygon).AddHandle(e.X, e.Y);
                 }
             }
             pictureBox1.Invalidate();
@@ -361,11 +358,11 @@ namespace Cropper
         public void AddPanel(int x, int y, int w, int h)
         {
             var panel = ShapeToAdd(x, y, w, h);
-            panel.Order = _selectionPanels.Count;
 
-            _selectionPanels.Add(panel);
+
+            _currentImage.AddPanel(panel);
             AddPanelToTree(panel);
-            propertyGrid1.SelectedObject = _selectionPanels.Last();
+            propertyGrid1.SelectedObject = panel;
             pictureBox1.Invalidate();
 
         }
@@ -377,7 +374,7 @@ namespace Cropper
         public void ExportImages(string outputDirectory, int pStartNumber, string pImageName)
         {
             var sourceImage = pictureBox1.Image;
-            foreach (ShapeBase selection in _selectionPanels)
+            foreach (ShapeBase selection in _currentImage.SectionPanels)
             {
                 // Save the cropped image to a file
                 string outputFilePath = Path.Combine(outputDirectory, $"{pImageName}_{selection.Order + pStartNumber}.png");
@@ -388,59 +385,9 @@ namespace Cropper
                 }
             }
 
-            MessageBox.Show($"Exported {_selectionPanels.Count} panels to {outputDirectory}");
+            MessageBox.Show($"Exported {_currentImage.SectionPanels.Count} panels to {outputDirectory}");
         }
 
-        #region Linkbutton
-
-
-        /// <summary>
-        /// Autogenerate panels
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void llGenerate_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            int imageWidth = pictureBox1.Size.Width;
-            int imageHeight = pictureBox1.Size.Height;
-            int padHorizontal = (int)padH.Value;
-            int padVertical = (int)padV.Value;
-            int rows = (int)numRows.Value;
-            int cols = (int)numCols.Value;
-            int order = (int)panelNumStart.Value;
-
-            int panelWidth = (imageWidth - (padHorizontal * (cols + 1))) / rows;
-            int panelHeight = (imageHeight - (padHorizontal * (rows + 1))) / cols;
-
-            for (int r = 1; r <= rows; r++)
-            {
-                for (int c = 1; c <= cols; c++)
-                {
-
-                    int x = (c * padHorizontal) + (panelWidth * (c - 1));
-                    int y = (r * padVertical) + (panelHeight * (r - 1));
-
-                    Debug.WriteLine($"Cell [{r},{c}]: ({x},{y}) - ({panelWidth},{panelHeight})");
-
-                    _selectionPanels.Add(
-
-                            new ShapeRectangle(x, y, panelWidth, panelHeight) { Order = order }
-
-                        );
-
-                    order++;
-
-                    _selectionPanels.Last().Selected = false;
-
-                }
-
-                pictureBox1.Invalidate();
-
-            }
-        }
-
-
-        #endregion
 
         #region Property Grid
 
@@ -451,65 +398,108 @@ namespace Cropper
 
         #endregion
 
+        /// <summary>
+        /// Reset the form
+        /// </summary>
+        private void Init(bool pEnableSave)
+        {
+            _currentImage = new ImageSave();
+            propertyGrid1.SelectedObject = null;
+            pictureBox1.Invalidate();
+            treeView1.Nodes.Clear();
+            _PanelSavePath = null;
+            _mouseDownLocation = Point.Empty;
+            _SelectionRectangle = Rectangle.Empty;
+            saveAsToolStripMenuItem.Enabled = pEnableSave;
+            saveToolStripMenuItem.Enabled = pEnableSave;
+        }
 
 
         #region tool strip items
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Clear project?", "Clear Project", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+
+            if (_currentImage.Image != null && MessageBox.Show("Clear project?", "Clear Project", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
             {
                 return;
             }
 
-            pictureBox1.Image = null;
-            _selectionPanels.Clear();
-            propertyGrid1.SelectedObject = null;
-            pictureBox1.Invalidate();
-            treeView1.Nodes.Clear();
+            Init(false);
+
+            importImageToolStripMenuItem_Click(null, null);
         }
 
+        /// <summary>
+        /// Open a save file
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (OpenFileDialog openFileDialog = new OpenFileDialog())
-            {
-                openFileDialog.Title = "Select an Image File";
-                openFileDialog.Filter = "Image Files|*.bmp;*.jpg;*.jpeg;*.gif;*.png;*.tif;*.tiff|All Files|*.*";
-                openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+            Init(true);
 
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
+            using (OpenFileDialog ofd = new OpenFileDialog())
+            {
+                ofd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+                ofd.Title = "Open Saved Panels";
+                ofd.Filter = _ProjectFilter;
+
+                if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    treeView1.Nodes.Clear();
-                    _imageSourceFolder = Path.GetDirectoryName(openFileDialog.FileName);
-                    _selectionPanels = new List<ShapeBase>();
-                    pictureBox1.Image = new Bitmap(openFileDialog.FileName);
-                    pictureBox1.Invalidate();
+                    _currentImage = PanelUtilities.LoadPanels(ofd.FileName);
+                    _PanelSavePath = ofd.FileName;
+                    PopulateTree();
+                    SetImage();
                 }
-                else
-                {
-                    pictureBox1.Image = null;
-                }
+
             }
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (_PanelSavePath == null)
+            {
+                using (SaveFileDialog saveFileDialog = new SaveFileDialog())
+                {
+                    saveFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+                    saveFileDialog.Title = "Select Project";
+                    saveFileDialog.Filter = _ProjectFilter;
 
+                    if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        _PanelSavePath = saveFileDialog.FileName;
+                    }
+                }
+            }
+            PanelUtilities.SavePanels(_currentImage, _PanelSavePath);
         }
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            using (SaveFileDialog saveFileDialog = new SaveFileDialog())
+            {
+                saveFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+                saveFileDialog.Title = "Save Project as";
+                saveFileDialog.Filter = _ProjectFilter;
 
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    PanelUtilities.SavePanels(_currentImage, saveFileDialog.FileName);
+                }
+
+            }
         }
 
+  
 
         private void exportImagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (!_imageLoaded)
+            if (!_currentImage.ImageLoaded)
             {
                 MessageBox.Show("Must select an image first");
             }
-            else if (_selectionPanels.Count == 0)
+            else if (_currentImage.SectionPanels.Count == 0)
             {
                 MessageBox.Show("Must select image portions");
             }
@@ -549,9 +539,57 @@ namespace Cropper
         private void removeAllPanelsToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             treeView1.Nodes.Clear();
-            _selectionPanels.Clear();
+            _currentImage.SectionPanels.Clear();
             pictureBox1.Invalidate();
             propertyGrid1.SelectedObject = null;
+        }
+
+        private void importImageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (_currentImage == null)
+                return;
+
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Title = "Select an Image File";
+                openFileDialog.Filter = "Image Files|*.bmp;*.jpg;*.jpeg;*.gif;*.png;*.tif;*.tiff|All Files|*.*";
+                openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    Init(true);
+
+                    _currentImage.Image = new Bitmap(openFileDialog.FileName);
+                    SetImage();
+                }
+            }
+        }
+
+
+
+        private void generatePanelsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!_currentImage.ImageLoaded)
+            {
+                MessageBox.Show("Must select an image first");
+            }
+            else
+            {
+                AutoGeneratePanels auto = new AutoGeneratePanels();
+               
+                if (auto.ShowDialog() == DialogResult.OK)
+                {
+                    int padHorizontal = auto.PadHor;
+                    int padVertical = auto.PadVert;
+                    int rows = auto.NumRows;
+                    int cols = auto.NumCols;
+                    int order = _currentImage.SectionPanels.Count;
+
+                    PanelUtilities.GeneratePanels(_currentImage.Image, rows, cols, order, padVertical, padHorizontal);
+                    pictureBox1.Invalidate();
+
+                }
+            }
         }
     }
 

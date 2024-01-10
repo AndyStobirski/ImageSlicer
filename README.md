@@ -53,8 +53,12 @@ Imageorder is set when panels are added, and can offset by specifying an offset 
 
 Things it needs:
 
-* Add feature to save panel maps
+* Add feature to save / load panel maps
 * Add undo / redo (I'll never do this, to be honest)
 * Add a duplicate panel feature
 * Add z-order
 * Improve panel hit detection - it gets weird if panels are stacked on top of each other.
+
+## Dependencies
+
+* Newtonsoft.JSON - used in serialisation of panels
