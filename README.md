@@ -8,16 +8,23 @@ This app is covered by the MIT license which is contained in the root directory 
 
 ## Usage
 
-### Opening a file
+### Creating a Project
 
-Select File > Open to select an image to display.
+To export an image as panel, create a project using File > New
+
+Load an image into the project with Tools > Import Image
+
+Save a project with File > Save or File > Save As
+
+### Saving a Project
+
+The image and selection panels can be saved as a project into an in individual file using File > Save or File > Save As.
 
 ### Adding panels
 
-**Panel Types**
-The menu Draw is used to select the panel being drawn: Polygon or Rectangle
+The panel type being drawn on a loaded image is selected from the *Shapes Menu*, which has the items Polygon or Rectangle.
 
-**Manual**
+**Manual drawing panels**
 
 Click and drag to draw a panel, releasing the mouse will add the panel if it exceeds the Selection Size values, or doubleclick the image to add a panel of the selection size values. 
 
@@ -25,7 +32,9 @@ Panels will contain a number indicating the order in which they were added, whic
 
 **Automatically**
 
-The tab settings on the main form contains a section called *Generate Panels*, which is used to automatically generate a set of panels on the loading images. The number of panels per row and number of columns can be specified, along with horizontal and vertical panel paddings. This assumes the image has regular spaced panel, and is a quick way to get started.
+A regular number of panels can be drawn on the image by selecting Tools > Generate Panels. Options available are rows, columns, vertical padding and horizontal padding.
+
+This assumes the image has regular spaced panel, and is a quick way to get started.
 
 **Editing Panels**
 
@@ -39,7 +48,7 @@ Polygon panels can have another point adding by clicking on a line, and a point 
 
 ### Exporting images
 
-To generate a series of regular panels select Tools > Export Images.
+To export the images under the panels Tools > Export Panels.
 
 The output directory, by default, is taken from the image source location, and can be changed with a folder browser.
 
@@ -53,7 +62,6 @@ Imageorder is set when panels are added, and can offset by specifying an offset 
 
 Things it needs:
 
-* Add feature to save / load panel maps
 * Add undo / redo (I'll never do this, to be honest)
 * Add a duplicate panel feature
 * Add z-order
