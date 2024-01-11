@@ -270,6 +270,7 @@
             exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             exitToolStripMenuItem.Size = new Size(270, 34);
             exitToolStripMenuItem.Text = "E&xit";
+            exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
             // 
             // toolStripSeparator1
             // 
@@ -286,33 +287,33 @@
             // generatePanelsToolStripMenuItem
             // 
             generatePanelsToolStripMenuItem.Name = "generatePanelsToolStripMenuItem";
-            generatePanelsToolStripMenuItem.Size = new Size(254, 34);
+            generatePanelsToolStripMenuItem.Size = new Size(270, 34);
             generatePanelsToolStripMenuItem.Text = "Generate Panels";
             generatePanelsToolStripMenuItem.Click += generatePanelsToolStripMenuItem_Click;
             // 
             // exportImagesToolStripMenuItem
             // 
             exportImagesToolStripMenuItem.Name = "exportImagesToolStripMenuItem";
-            exportImagesToolStripMenuItem.Size = new Size(254, 34);
+            exportImagesToolStripMenuItem.Size = new Size(270, 34);
             exportImagesToolStripMenuItem.Text = "Export Panels";
             exportImagesToolStripMenuItem.Click += exportImagesToolStripMenuItem_Click;
             // 
             // removeAllPanelsToolStripMenuItem1
             // 
             removeAllPanelsToolStripMenuItem1.Name = "removeAllPanelsToolStripMenuItem1";
-            removeAllPanelsToolStripMenuItem1.Size = new Size(254, 34);
+            removeAllPanelsToolStripMenuItem1.Size = new Size(270, 34);
             removeAllPanelsToolStripMenuItem1.Text = "Remove all Panels";
             removeAllPanelsToolStripMenuItem1.Click += removeAllPanelsToolStripMenuItem1_Click;
             // 
             // toolStripSeparator3
             // 
             toolStripSeparator3.Name = "toolStripSeparator3";
-            toolStripSeparator3.Size = new Size(251, 6);
+            toolStripSeparator3.Size = new Size(267, 6);
             // 
             // importImageToolStripMenuItem
             // 
             importImageToolStripMenuItem.Name = "importImageToolStripMenuItem";
-            importImageToolStripMenuItem.Size = new Size(254, 34);
+            importImageToolStripMenuItem.Size = new Size(270, 34);
             importImageToolStripMenuItem.Text = "Import Image";
             importImageToolStripMenuItem.Click += importImageToolStripMenuItem_Click;
             // 

@@ -258,7 +258,7 @@ namespace Cropper
 
         private void PopulateTree()
         {
-            foreach(var panel in _currentImage.SectionPanels.OrderBy(p=>p.Order))
+            foreach (var panel in _currentImage.SectionPanels.OrderBy(p => p.Order))
             {
                 AddPanelToTree(panel);
             }
@@ -373,7 +373,7 @@ namespace Cropper
         /// <param name="outputDirectory"></param>
         public void ExportImages(string outputDirectory, int pStartNumber, string pImageName)
         {
-            var sourceImage = pictureBox1.Image;
+            var sourceImage = _currentImage.Image;
             foreach (ShapeBase selection in _currentImage.SectionPanels)
             {
                 // Save the cropped image to a file
@@ -449,6 +449,7 @@ namespace Cropper
                 {
                     _currentImage = PanelUtilities.LoadPanels(ofd.FileName);
                     _PanelSavePath = ofd.FileName;
+                    _imageSourceFolder = Path.GetDirectoryName(ofd.FileName);
                     PopulateTree();
                     SetImage();
                 }
@@ -469,10 +470,11 @@ namespace Cropper
                     if (saveFileDialog.ShowDialog() == DialogResult.OK)
                     {
                         _PanelSavePath = saveFileDialog.FileName;
+                        PanelUtilities.SavePanels(_currentImage, _PanelSavePath);
                     }
                 }
             }
-            PanelUtilities.SavePanels(_currentImage, _PanelSavePath);
+            
         }
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -491,7 +493,7 @@ namespace Cropper
             }
         }
 
-  
+
 
         private void exportImagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -576,7 +578,7 @@ namespace Cropper
             else
             {
                 AutoGeneratePanels auto = new AutoGeneratePanels();
-               
+
                 if (auto.ShowDialog() == DialogResult.OK)
                 {
                     int padHorizontal = auto.PadHor;
@@ -590,6 +592,11 @@ namespace Cropper
 
                 }
             }
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 
