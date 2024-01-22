@@ -233,6 +233,11 @@ namespace Cropper
                 if (_currentImage.SelectedShape.ItemHit == SelectionPartHit.dragHandle)
                 {
                     (_currentImage.SelectedShape as ShapePolygon).DeleteHandle();
+
+                    _currentImage.SelectedShape = _currentImage.PanelOver = _currentImage.PanelDown = null;
+                    _currentImage.PanelPartDown = _currentImage.PanelPartDown = SelectionPartHit.none;
+                    pictureBox1.Invalidate();
+
                 }
                 this.Invalidate();
             }
