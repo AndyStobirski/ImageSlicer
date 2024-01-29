@@ -17,7 +17,15 @@ namespace ImageSlicer
             InitializeComponent();
         }
 
-        public string ImageSourceFolder { get; set; }
+        public string ImageSourceFolder { get; private set; }
+        public void SetImageSourceFolder(string pPath)
+        {
+            ImageSourceFolder = pPath;
+            txtPath.Text = pPath;
+
+        }
+
+        
         public int PanelStartNumber => (int)panelNumStart.Value;
         public string ImageName { get; private set; }
 

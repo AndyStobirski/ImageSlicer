@@ -513,7 +513,7 @@ namespace Cropper
             else
             {
                 frmExportOptions popupForm = new frmExportOptions();
-                popupForm.ImageSourceFolder = _imageSourceFolder;
+                popupForm.SetImageSourceFolder( _imageSourceFolder);
                 if (popupForm.ShowDialog() == DialogResult.OK)
                 {
                     ExportImages(popupForm.ImageSourceFolder, popupForm.PanelStartNumber, popupForm.ImageName);
@@ -545,6 +545,10 @@ namespace Cropper
 
         private void removeAllPanelsToolStripMenuItem1_Click(object sender, EventArgs e)
         {
+            if (MessageBox.Show("Remove all panels?","Remove", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No) {
+                return;
+            }
+
             treeView1.Nodes.Clear();
             _currentImage.SectionPanels.Clear();
             pictureBox1.Invalidate();
