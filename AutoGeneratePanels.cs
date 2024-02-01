@@ -21,6 +21,11 @@ namespace ImageSlicer
         public int NumCols => (int)numCols.Value;
         public int PadVert => (int)padV.Value;
         public int PadHor => (int)padH.Value;
+
+        private void btnGenerate_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 
 

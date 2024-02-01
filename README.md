@@ -1,6 +1,6 @@
 # Image Slicer
 
-This app allows an image to be exported as a series of rectangles or polygons which are drawn onto the loaded image, and are known as **panels**.
+This app allows an image to be exported as a series of rectangles or polygons which can be either drawn onto the loaded image or detected using the AForge pacakge, and are known as **panels**.
 
 This project was authored in Visual Studio 2022, and requires no fancy plugins or extensions, and in short should work out of the box.
 

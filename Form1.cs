@@ -1,15 +1,6 @@
-using Microsoft.VisualBasic.ApplicationServices;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System;
-using System.Windows.Forms;
-using System.Drawing.Imaging;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ProgressBar;
-using System.Diagnostics;
-using System.Runtime.Serialization;
 using ImageSlicer;
 using ImageSlicer.ImageExractors;
 using ImageSlicer.Utilties;
-using System.IO;
 
 namespace Cropper
 {
@@ -479,7 +470,7 @@ namespace Cropper
                     }
                 }
             }
-            
+
         }
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -513,7 +504,7 @@ namespace Cropper
             else
             {
                 frmExportOptions popupForm = new frmExportOptions();
-                popupForm.SetImageSourceFolder( _imageSourceFolder);
+                popupForm.SetImageSourceFolder(_imageSourceFolder);
                 if (popupForm.ShowDialog() == DialogResult.OK)
                 {
                     ExportImages(popupForm.ImageSourceFolder, popupForm.PanelStartNumber, popupForm.ImageName);
@@ -545,7 +536,8 @@ namespace Cropper
 
         private void removeAllPanelsToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Remove all panels?","Remove", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No) {
+            if (MessageBox.Show("Remove all panels?", "Remove", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+            {
                 return;
             }
 
@@ -606,6 +598,29 @@ namespace Cropper
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
+        }
+
+
+        private void DetectEdges_Click(object sender, EventArgs e)
+        {
+            if (_currentImage == null)
+                return;
+
+            DetectEdges popupForm = new DetectEdges();
+            if (popupForm.ShowDialog() == DialogResult.OK)
+            {
+                var rects = EdgeGetter.GetEdges((Bitmap)_currentImage.Image, popupForm.Sensitivity);
+
+                if (popupForm.SimplifyRectangleOutput)
+                {
+                    rects = EdgeGetter.GetRectanglesNotContained(rects);
+                }
+
+                foreach (var rect in rects)
+                {
+                    AddPanel(rect.X, rect.Y, rect.Width, rect.Height);
+                }
+            }
         }
     }
 

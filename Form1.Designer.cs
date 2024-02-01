@@ -52,6 +52,8 @@
             exitToolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator1 = new ToolStripSeparator();
             toolsToolStripMenuItem = new ToolStripMenuItem();
+            DetectEdges = new ToolStripMenuItem();
+            toolStripSeparator4 = new ToolStripSeparator();
             generatePanelsToolStripMenuItem = new ToolStripMenuItem();
             exportImagesToolStripMenuItem = new ToolStripMenuItem();
             removeAllPanelsToolStripMenuItem1 = new ToolStripMenuItem();
@@ -223,7 +225,7 @@
             newToolStripMenuItem.ImageTransparentColor = Color.Magenta;
             newToolStripMenuItem.Name = "newToolStripMenuItem";
             newToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.N;
-            newToolStripMenuItem.Size = new Size(270, 34);
+            newToolStripMenuItem.Size = new Size(223, 34);
             newToolStripMenuItem.Text = "&New";
             newToolStripMenuItem.Click += newToolStripMenuItem_Click;
             // 
@@ -233,14 +235,14 @@
             openToolStripMenuItem.ImageTransparentColor = Color.Magenta;
             openToolStripMenuItem.Name = "openToolStripMenuItem";
             openToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.O;
-            openToolStripMenuItem.Size = new Size(270, 34);
+            openToolStripMenuItem.Size = new Size(223, 34);
             openToolStripMenuItem.Text = "&Open";
             openToolStripMenuItem.Click += openToolStripMenuItem_Click;
             // 
             // toolStripSeparator
             // 
             toolStripSeparator.Name = "toolStripSeparator";
-            toolStripSeparator.Size = new Size(267, 6);
+            toolStripSeparator.Size = new Size(220, 6);
             // 
             // saveToolStripMenuItem
             // 
@@ -249,71 +251,83 @@
             saveToolStripMenuItem.ImageTransparentColor = Color.Magenta;
             saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             saveToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.S;
-            saveToolStripMenuItem.Size = new Size(270, 34);
+            saveToolStripMenuItem.Size = new Size(223, 34);
             saveToolStripMenuItem.Text = "&Save";
             saveToolStripMenuItem.Click += saveToolStripMenuItem_Click;
             // 
             // saveAsToolStripMenuItem
             // 
             saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            saveAsToolStripMenuItem.Size = new Size(270, 34);
+            saveAsToolStripMenuItem.Size = new Size(223, 34);
             saveAsToolStripMenuItem.Text = "Save &As";
             saveAsToolStripMenuItem.Click += saveAsToolStripMenuItem_Click;
             // 
             // toolStripSeparator2
             // 
             toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new Size(267, 6);
+            toolStripSeparator2.Size = new Size(220, 6);
             // 
             // exitToolStripMenuItem
             // 
             exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            exitToolStripMenuItem.Size = new Size(270, 34);
+            exitToolStripMenuItem.Size = new Size(223, 34);
             exitToolStripMenuItem.Text = "E&xit";
             exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
             // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(267, 6);
+            toolStripSeparator1.Size = new Size(220, 6);
             // 
             // toolsToolStripMenuItem
             // 
-            toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { generatePanelsToolStripMenuItem, exportImagesToolStripMenuItem, removeAllPanelsToolStripMenuItem1, toolStripSeparator3, importImageToolStripMenuItem });
+            toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { DetectEdges, toolStripSeparator4, generatePanelsToolStripMenuItem, exportImagesToolStripMenuItem, removeAllPanelsToolStripMenuItem1, toolStripSeparator3, importImageToolStripMenuItem });
             toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             toolsToolStripMenuItem.Size = new Size(69, 29);
             toolsToolStripMenuItem.Text = "&Tools";
             // 
+            // DetectEdges
+            // 
+            DetectEdges.Name = "DetectEdges";
+            DetectEdges.Size = new Size(270, 34);
+            DetectEdges.Text = "Detect Edges";
+            DetectEdges.Click += DetectEdges_Click;
+            // 
+            // toolStripSeparator4
+            // 
+            toolStripSeparator4.Name = "toolStripSeparator4";
+            toolStripSeparator4.Size = new Size(267, 6);
+            // 
             // generatePanelsToolStripMenuItem
             // 
             generatePanelsToolStripMenuItem.Name = "generatePanelsToolStripMenuItem";
-            generatePanelsToolStripMenuItem.Size = new Size(254, 34);
+            generatePanelsToolStripMenuItem.Size = new Size(270, 34);
             generatePanelsToolStripMenuItem.Text = "Generate Panels";
             generatePanelsToolStripMenuItem.Click += generatePanelsToolStripMenuItem_Click;
             // 
             // exportImagesToolStripMenuItem
             // 
             exportImagesToolStripMenuItem.Name = "exportImagesToolStripMenuItem";
-            exportImagesToolStripMenuItem.Size = new Size(254, 34);
+            exportImagesToolStripMenuItem.Size = new Size(270, 34);
             exportImagesToolStripMenuItem.Text = "Export Panels";
             exportImagesToolStripMenuItem.Click += exportImagesToolStripMenuItem_Click;
             // 
             // removeAllPanelsToolStripMenuItem1
             // 
             removeAllPanelsToolStripMenuItem1.Name = "removeAllPanelsToolStripMenuItem1";
-            removeAllPanelsToolStripMenuItem1.Size = new Size(254, 34);
+            removeAllPanelsToolStripMenuItem1.Size = new Size(270, 34);
             removeAllPanelsToolStripMenuItem1.Text = "Remove all Panels";
             removeAllPanelsToolStripMenuItem1.Click += removeAllPanelsToolStripMenuItem1_Click;
             // 
             // toolStripSeparator3
             // 
             toolStripSeparator3.Name = "toolStripSeparator3";
-            toolStripSeparator3.Size = new Size(251, 6);
+            toolStripSeparator3.Size = new Size(267, 6);
             // 
             // importImageToolStripMenuItem
             // 
             importImageToolStripMenuItem.Name = "importImageToolStripMenuItem";
-            importImageToolStripMenuItem.Size = new Size(254, 34);
+            importImageToolStripMenuItem.Size = new Size(270, 34);
             importImageToolStripMenuItem.Text = "Import Image";
             importImageToolStripMenuItem.Click += importImageToolStripMenuItem_Click;
             // 
@@ -411,5 +425,7 @@
         private ToolStripSeparator toolStripSeparator3;
         private ToolStripMenuItem importImageToolStripMenuItem;
         private ToolStripMenuItem generatePanelsToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator4;
+        private ToolStripMenuItem DetectEdges;
     }
 }
